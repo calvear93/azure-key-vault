@@ -4,7 +4,7 @@ Node library for handle Azure Key Vault, abstracts secrets management by project
 
 ## How To Use 💡
 
-Should be initialized with RouterProvider on App.jsx like:
+Should be initialized with AzureKeyVault as:
 ```javascript
 import { AzureKeyVault } from '@calvear/azure-key-vault';
 
