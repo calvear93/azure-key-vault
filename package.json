@@ -1,0 +1,53 @@
+{
+  "version": "1.0.0",
+  "name": "@calvear/azure-key-vault",
+  "title": "Azure Key Vault handler",
+  "description": "Azure Key Vault handler, abstracts secrets management by project, environment and group when vault is shared.",
+  "author": "Alvear Candia, Cristopher Alejandro <calvear93@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "repository": "https://github.com/calvear93/azure-key-vault",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "azure",
+    "key-vault",
+    "secrets"
+  ],
+  "engines": {
+    "node": ">=12",
+    "npm": ">=6"
+  },
+  "dependencies": {
+    "@azure/identity": "^1.2.4",
+    "@azure/keyvault-secrets": "^4.1.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.13.0",
+    "@babel/eslint-parser": "^7.13.8",
+    "@babel/preset-env": "^7.13.8",
+    "@babel/preset-react": "^7.12.13",
+    "eslint": "^7.20.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^24.1.5",
+    "eslint-plugin-jsdoc": "^32.2.0",
+    "eslint-plugin-radar": "^0.2.1",
+    "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-react-hooks": "^4.2.0"
+  },
+  "scripts": {
+    "build": "npx babel src --out-dir dist --copy-files --source-maps",
+    "upload": "npm run build && npm login && npm publish --access public",
+    "upload:beta": "npm run build && npm login && npm publish --access public --tag beta",
+    "upload:alpha": "npm run build && npm login && npm publish --access public --tag alpha",
+    "eslint:analyze": "eslint --ext .js,.jsx src/",
+    "eslint:fix": "eslint --fix --ext .js,.jsx src/",
+    "test": "test --watchAll=false --verbose",
+    "_packages:update": "npm update --save/--save-dev",
+    "_packages:force-update": "npx npm-check-updates -u",
+    "_git:case-sensitive": "git config core.ignorecase false",
+    "prebuild": "rimraf dist/**"
+  }
+}

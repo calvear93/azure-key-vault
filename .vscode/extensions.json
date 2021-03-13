@@ -1,0 +1,21 @@
+{
+    "recommendations": [
+        "arjunkomath.js-file-header",
+        "beardedbear.beardedtheme",
+        "dbaeumer.vscode-eslint",
+        "eamodio.gitlens",
+        "eg2.vscode-npm-script",
+        "fknop.vscode-npm",
+        "jpoissonnier.vscode-styled-components",
+        "msjsdiag.debugger-for-chrome",
+        "msjsdiag.debugger-for-edge",
+        "oouo-diogo-perdigao.docthis",
+        "pkief.material-icon-theme",
+        "rvest.vs-code-prettier-eslint",
+        "ryannaddy.vscode-format",
+        "stylelint.vscode-stylelint",
+        "svipas.prettier-plus",
+        "waderyan.gitblame",
+        "DotJoshJohnson.xml"
+    ]
+}
