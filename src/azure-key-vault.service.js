@@ -9,7 +9,7 @@
  * @author Alvear Candia, Cristopher Alejandro <calvear93@gmail.com>
  *
  * Created at     : 2021-03-12 18:06:29
- * Last modified  : 2021-03-13 13:20:17
+ * Last modified  : 2021-03-20 19:38:59
  */
 
 const { DefaultAzureCredential } = require('@azure/identity');
@@ -127,7 +127,7 @@ export default class AzureKeyVault
      *
      * @returns {any} deletion info
      */
-    async delete(key)
+    delete(key)
     {
         try
         {
@@ -135,7 +135,7 @@ export default class AzureKeyVault
         }
         catch
         {
-            return { message: `secret ${key} does not exists` };
+            return Promise.resolve({ message: `secret ${key} does not exists` });
         }
     }
 
@@ -146,7 +146,7 @@ export default class AzureKeyVault
      *
      * @returns {any} purge info
      */
-    async purge(key)
+    purge(key)
     {
         try
         {
@@ -154,7 +154,7 @@ export default class AzureKeyVault
         }
         catch
         {
-            return { message: `secret ${key} does not exists` };
+            return Promise.resolve({ message: `secret ${key} does not exists` });
         }
     }
 
@@ -165,7 +165,7 @@ export default class AzureKeyVault
      *
      * @returns {any} restoration info
      */
-    async restore(key)
+    restore(key)
     {
         try
         {
@@ -173,7 +173,7 @@ export default class AzureKeyVault
         }
         catch
         {
-            return { message: `secret ${key} does not exists` };
+            return Promise.resolve({ message: `secret ${key} does not exists` });
         }
     }
 
