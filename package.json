@@ -1,5 +1,5 @@
 {
-  "version": "1.0.2",
+  "version": "1.1.0",
   "name": "@calvear/azure-key-vault",
   "title": "Azure Key Vault handler",
   "description": "Azure Key Vault handler, abstracts secrets management by project, environment and group when vault is shared.",
@@ -11,6 +11,9 @@
   "files": [
     "dist"
   ],
+  "bin": {
+    "akv": "dist/bin/akv.js"
+  },
   "keywords": [
     "azure",
     "key-vault",
@@ -22,7 +25,8 @@
   },
   "dependencies": {
     "@azure/identity": "^1.2.5",
-    "@azure/keyvault-secrets": "^4.1.0"
+    "@azure/keyvault-secrets": "^4.1.0",
+    "minimist": "^1.2.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.10",

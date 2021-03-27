@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2021-03-27
+-   Added akv command.
+
 ## [1.0.2] - 2021-03-27
 -   Dependencies updated.
 

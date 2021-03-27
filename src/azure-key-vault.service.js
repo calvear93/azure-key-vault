@@ -9,7 +9,7 @@
  * @author Alvear Candia, Cristopher Alejandro <calvear93@gmail.com>
  *
  * Created at     : 2021-03-12 18:06:29
- * Last modified  : 2021-03-20 19:38:59
+ * Last modified  : 2021-03-27 19:30:18
  */
 
 const { DefaultAzureCredential } = require('@azure/identity');
@@ -79,9 +79,16 @@ export default class AzureKeyVault
      */
     async get(key)
     {
-        const { value } = await this.client.getSecret(this.secretName(key));
+        try
+        {
+            const { value } = await this.client.getSecret(this.secretName(key));
 
-        return value;
+            return value;
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     /**
@@ -194,7 +201,6 @@ export default class AzureKeyVault
             const { project, env, group, name } = tags ?? {};
 
             if (project === this.project && group === this.group && env === this.env)
-
                 secrets[name] = await this.get(name);
         }
 
@@ -224,7 +230,9 @@ export default class AzureKeyVault
             try
             {
                 // waits for secret retrieving
-                secrets[key] = await promises[key];
+                const value = await promises[key];
+
+                secrets[key] = value ?? secrets[key];
             }
             catch
             {
