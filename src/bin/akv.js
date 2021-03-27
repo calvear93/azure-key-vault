@@ -1,48 +1,55 @@
 #!/usr/bin/env node
-import parseParams from 'minimist';
+import { getArgs } from './cmd.util';
+import path from 'path';
+import fs from 'fs';
 import AzureKeyVault from '../azure-key-vault.service';
+
+const CURRENT_DIR = process.cwd();
 
 (async () =>
 {
-    const args = parseParams(process.argv.slice(2));
+    const args = getArgs();
 
-    console.log(`yeah, the arguments are ${JSON.stringify(args)}`);
+    // initializes key vault handler
+    const keyVault = new AzureKeyVault({
+        project: args.project,
+        group: args.group,
+        env: args.env
+    }, {
+        keyVaultUri: args.uri,
+        clientId: args.spn,
+        clientSecret: args.password,
+        tenantId: args.tenant
+    });
 
-    switch (args._[0])
+    // command routering
+    switch (args.cmd)
     {
         case 'getFor':
+            {
+                const { file, output } = args;
+
+                if (!file)
+                    throw new Error('"file" param is required"');
+
+                if (!output)
+                    throw new Error('"output" param is required"');
+
+                // reads secrets definition file
+                const input = require(path.resolve(CURRENT_DIR, file));
+                const secrets = await keyVault.getFor(input);
+
+                // saves output file with secrets
+                const data = JSON.stringify(secrets, null, 4);
+                fs.writeFileSync(path.resolve(CURRENT_DIR, output), data);
+            }
+            break;
+
+        case 'update':
             console.log('yeh');
             break;
 
         default:
-            console.error('no command provided');
-            break;
+            throw new Error(`akv command "${args._[0]}" doesn't exists`);
     }
-
-    // let filePath = path.resolve(__dirname, "../files/somefile.txt")
-
-    // const kv = new AzureKeyVault({
-    //     project: 'achs-virtual',
-    //     group: 'web',
-    //     env: 'qa'
-    // }, {
-    //     keyVaultUri: 'https://kv-qa-ittec-sti.vault.azure.net',
-    //     clientId: '4beb8852-aba3-4ee8-9bdb-32876e1bc632',
-    //     clientSecret: 'qNRjd.~Yf2Pz2D2-0Jq6--DxS31MPCn5l9',
-    //     tenantId: '6d4bbe0a-5654-4c69-a682-bf7dcdaed8e7'
-    // });
-
-    // await kv.setAll({
-    // 	REACT_APP_DEBUG_VALUE1: 'debug 1',
-    // 	REACT_APP_DEBUG_VALUE2: 'debug 2',
-    // 	REACT_APP_DEBUG_VALUE3: 'debug 3',
-    // 	REACT_APP_DEBUG_VALUE4: 'debug 4',
-    // });
-
-    // const env = await kv.getFor({
-    //     REACT_APP_DEBUG_VALUE3: null,
-    //     REACT_APP_DEBUG_VALUE5: 'test'
-    // });
-
-    // console.log('Secrets: ', JSON.stringify(env));
 })();
