@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
+  "version": "1.0.2",
   "name": "@calvear/azure-key-vault",
   "title": "Azure Key Vault handler",
   "description": "Azure Key Vault handler, abstracts secrets management by project, environment and group when vault is shared.",
@@ -21,16 +21,16 @@
     "npm": ">=6"
   },
   "dependencies": {
-    "@azure/identity": "^1.2.4",
+    "@azure/identity": "^1.2.5",
     "@azure/keyvault-secrets": "^4.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.10",
     "@babel/eslint-parser": "^7.13.10",
-    "@babel/preset-env": "^7.13.10",
-    "eslint": "^7.22.0",
+    "@babel/preset-env": "^7.13.12",
+    "eslint": "^7.23.0",
     "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jsdoc": "^32.2.0",
+    "eslint-plugin-jsdoc": "^32.3.0",
     "eslint-plugin-radar": "^0.2.1"
   },
   "scripts": {
