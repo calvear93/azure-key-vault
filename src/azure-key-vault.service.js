@@ -251,7 +251,7 @@ export default class AzureKeyVault
      *
      * [i] faster than getAll()
      *
-     * @param {object} secrets dictionary with secrets (key, value).
+     * @param {object} secrets object with secrets (key, value).
      * @param {boolean} override if override secrets with default value.
      *
      * @returns {Array<any>} project group secrets list

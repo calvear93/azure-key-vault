@@ -1,6 +1,7 @@
 # Azure Key Vault
 
 Node library for handle Azure Key Vault, abstracts secrets management by project, environment and group when vault is shared.
+Also, this library handles nested JSON structures.
 
 ## How To Use 💡
 
@@ -28,19 +29,29 @@ async function main() {
     await keyVault.setAll({
         SECRET1: 'my secret 1',
         SECRET2: 'my secret 2',
+        otherConfig: {
+            SECRET3: 'my secret 3',
+        },
     });
 
     const mySecret2 = await keyVault.getInfo('SECRET2');
     console.log(mySecret2);
     // name is 'my-project-dev-web-secret2' and value 'my secret 2'
 
+    const mySecret3 = await keyVault.getInfo('otherConfig:SECRET3');
+    console.log(mySecret3);
+    // name is 'my-project-dev-web-otherConfig--secret3' and value 'my secret 3'
+
     const mySecrets = await keyVault.getFor({
         SECRET1: null,
         SECRET2: 'default value',
-        SECRET3: 'def for secret 3',
+        otherConfig: {
+            SECRET3: null,
+        },
+        SECRET4: 'def for secret 4',
     });
     console.log(mySecrets);
-    // prints { SECRET1: 'my secret 1, SECRET2: 'my secret 2', SECRET3: 'def for secret 3' }
+    // prints { SECRET1: 'my secret 1, SECRET2: 'my secret 2', otherConfig: { SECRET3: 'my secret 3' }, SECRET4: 'def for secret 3' }
 }
 
 main();
@@ -68,11 +79,15 @@ const keyVault = new AzureKeyVault({
 ...
 ```
 
-### Functions
+### **Functions**
 
 Library has functions for manage key vault secrets.
 
 -   **get**: returns secret value.
+
+| Parameters | Description                                                         |
+| ---------- | ------------------------------------------------------------------- |
+| `key`      | (string) secret key, use ':' for nested path, (i.e. car:props:name) |
 
 ```javascript
 const value = await keyVault.get('my-secret');
@@ -80,11 +95,20 @@ const value = await keyVault.get('my-secret');
 
 -   **getInfo**: returns secret info.
 
+| Parameters | Description                                                         |
+| ---------- | ------------------------------------------------------------------- |
+| `key`      | (string) secret key, use ':' for nested path, (i.e. car:props:name) |
+
 ```javascript
 const info = await keyVault.getInfo('my-secret');
 ```
 
 -   **set**: inserts or updates secret value.
+
+| Parameters | Description                                                         |
+| ---------- | ------------------------------------------------------------------- |
+| `key`      | (string) secret key, use ':' for nested path, (i.e. car:props:name) |
+| `value`    | (string) secret key, use ':' for nested path, (i.e. car:props:name) |
 
 ```javascript
 const info = await keyVault.set('my-secret', 'my secret value');
@@ -92,17 +116,29 @@ const info = await keyVault.set('my-secret', 'my secret value');
 
 -   **delete**: deletes a secret.
 
+| Parameters | Description                                                         |
+| ---------- | ------------------------------------------------------------------- |
+| `key`      | (string) secret key, use ':' for nested path, (i.e. car:props:name) |
+
 ```javascript
 const deletionInfo = await keyVault.delete('my-secret');
 ```
 
 -   **purge**: purges a deleted secret.
 
+| Parameters | Description                                                         |
+| ---------- | ------------------------------------------------------------------- |
+| `key`      | (string) secret key, use ':' for nested path, (i.e. car:props:name) |
+
 ```javascript
 const info = await keyVault.purge('my-secret');
 ```
 
 -   **restore**: restores a deleted secret.
+
+| Parameters | Description                                                         |
+| ---------- | ------------------------------------------------------------------- |
+| `key`      | (string) secret key, use ':' for nested path, (i.e. car:props:name) |
 
 ```javascript
 const restoredInfo = await keyVault.restore('my-secret');
@@ -116,6 +152,11 @@ const listOfSecrets = await keyVault.getAll();
 
 -   **getFor**: (faster than getAll) gets all secrets for the project, env and group defined in input object.
 
+| Parameters   | Description                                                                      |
+| ------------ | -------------------------------------------------------------------------------- |
+| `secrets`    | (any) object with secrets (key, value)                                           |
+| `[override]` | (boolean) (default: false) whether secrets with default value should be override |
+
 ```javascript
 let secrets = {
     'my-secret': null,
@@ -126,6 +167,10 @@ const listOfSecrets = await keyVault.getFor(secrets);
 ```
 
 -   **setAll**: insert or updates a set of secrets.
+
+| Parameters | Description                            |
+| ---------- | -------------------------------------- |
+| `secrets`  | (any) object with secrets (key, value) |
 
 ```javascript
 let secrets = {
@@ -153,6 +198,89 @@ const info = await keyVault.purgeAll();
 ```javascript
 const info = await keyVault.restoreAll();
 ```
+
+### **Commands**
+
+Library has node commands for use with npm.
+Every commands needs credentials arguments for connect to key vault.
+
+| Parameters   | Description                                                                    |
+| ------------ | ------------------------------------------------------------------------------ |
+| `--project`  | (string) project name                                                          |
+| `--group`    | (string) secrets group                                                         |
+| `--env`      | (string) environment                                                           |
+| `--uri`      | (string) key vault uri (i.e. https://my-key-vault.vault.azure.net)             |
+| `--spn`      | (string) service principal name id (i.e. f176a774-239e-4cd3-8551-88fd9fb9b441) |
+| `--password` | (string) spn secret password (i.e. WyBwkmcL8rGQe9B2fvRLDrqDuannE4Ku)           |
+| `--tenant`   | (string) tenant id (i.e. 9dba8525-be64-4d10-b124-e6f1644ae513)                 |
+
+You should define your npm script command in **package.json** as:
+
+```json
+// package.json
+{
+    ...,
+    "scripts": {
+        ...,
+        "akv": "akv --project=my-project --group=web --tenant=9dba8525-be64-4d10-b124-e6f1644ae513",
+        ...
+    },
+    ...
+}
+```
+
+-   **getFor**: writes a file with secrets as JSON, using a JSON file as secrets structure definition.
+
+| Parameters | Description                                                                  |
+| ---------- | ---------------------------------------------------------------------------- |
+| `--file`   | (string) relative uri (from cmd root) for JSON file for structure definition |
+| `--output` | (string) relative uri for result secrets JSON file                           |
+
+```cmd
+foo@bar:~$ npm run akv getFor \
+    --env=dev \
+    --uri=https://my-key-vault.vault.azure.net \
+    --spn=f176a774-239e-4cd3-8551-88fd9fb9b441 \
+    --password=WyBwkmcL8rGQe9B2fvRLDrqDuannE4Ku \
+    --file=secrets-structure-definition.json \
+    --output=my-secrets.json \
+    --override
+```
+
+-   **getAll**: writes all secrets (for project, group and env) in a JSON file.
+
+| Parameters | Description                                        |
+| ---------- | -------------------------------------------------- |
+| `--output` | (string) relative uri for result secrets JSON file |
+
+```cmd
+foo@bar:~$ npm run akv getAll \
+    --env=dev \
+    --uri=https://my-key-vault.vault.azure.net \
+    --spn=f176a774-239e-4cd3-8551-88fd9fb9b441 \
+    --password=WyBwkmcL8rGQe9B2fvRLDrqDuannE4Ku \
+    --output=my-secrets.json \
+    --override
+```
+
+-   **publish**: creates or updates secrets (for project, group and env) in key vault from a JSON file.
+
+| Parameters | Description                                                      |
+| ---------- | ---------------------------------------------------------------- |
+| `--file`   | (string) relative uri (from cmd root) for JSON file with secrets |
+
+```cmd
+foo@bar:~$ npm run akv publish \
+    --env=dev \
+    --uri=https://my-key-vault.vault.azure.net \
+    --spn=f176a774-239e-4cd3-8551-88fd9fb9b441 \
+    --password=WyBwkmcL8rGQe9B2fvRLDrqDuannE4Ku \
+    --file=my-secrets.json
+```
+
+-   **clear**: deletes all secrets (for project, group and env) in key vault.
+
+-   **restore**: restores all deleted secrets (for project, group and env) in key vault.
 
 ## Linting 🧿
 
