@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import fs from 'fs';
 import path from 'path';
-import AzureKeyVault from '../azure-key-vault.service';
 import { getArgs } from './cmd.util';
+import AzureKeyVault from '../azure-key-vault.service';
 
 const CURRENT_DIR = process.cwd();
 
