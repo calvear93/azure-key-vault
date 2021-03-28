@@ -9,7 +9,7 @@
  * @author Alvear Candia, Cristopher Alejandro <calvear93@gmail.com>
  *
  * Created at     : 2021-03-12 18:06:29
- * Last modified  : 2021-03-28 11:29:39
+ * Last modified  : 2021-03-28 12:00:15
  */
 
 const { DefaultAzureCredential } = require('@azure/identity');
@@ -252,10 +252,11 @@ export default class AzureKeyVault
      * [i] faster than getAll()
      *
      * @param {object} secrets dictionary with secrets (key, value).
+     * @param {boolean} skipIfDefault skips retrieving values for secrets with default value.
      *
      * @returns {Array<any>} project group secrets list
      */
-    async getFor(secrets)
+    async getFor(secrets, skipIfDefault = false)
     {
         let promises = {};
 
@@ -264,7 +265,7 @@ export default class AzureKeyVault
 
         // executes secret request
         for (const key in secrets)
-            promises[key] = this.get(key);
+            promises[key] = skipIfDefault && secrets[key] ? secrets[key] : this.get(key);
 
         for (const key in secrets)
         {

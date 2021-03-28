@@ -1,0 +1,16 @@
+{
+    "a": {
+        "REACT_APP_DEBUG_VALUE1": "debug 1",
+        "a1": {
+            "REACT_APP_DEBUG_VALUE2": "debug 2"
+        }
+    },
+    "b": {
+        "REACT_APP_DEBUG_VALUE3": "debug 3"
+    },
+    "c": {
+        "REACT_APP_DEBUG_VALUE4": "debug 4",
+        "REACT_APP_DEBUG_VALUE5": "debug 5"
+    },
+    "REACT_APP_DEBUG_VALUE6": "debug 6"
+}
