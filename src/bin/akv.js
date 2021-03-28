@@ -25,7 +25,7 @@ const CURRENT_DIR = process.cwd();
     {
         case 'getFor':
             {
-                const { file, output, skipdefault } = args;
+                const { file, output, override } = args;
 
                 if (!file)
                     throw new Error('"file" param is required');
@@ -35,7 +35,7 @@ const CURRENT_DIR = process.cwd();
 
                 // reads secrets definition file
                 const input = require(path.resolve(CURRENT_DIR, file));
-                const secrets = await keyVault.getFor(input, skipdefault);
+                const secrets = await keyVault.getFor(input, override);
 
                 // saves output file with secrets
                 const data = JSON.stringify(secrets, null, 4);
