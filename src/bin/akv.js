@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-import { getArgs } from './cmd.util';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
 import AzureKeyVault from '../azure-key-vault.service';
+import { getArgs } from './cmd.util';
+import { flatten, deflatten } from '../flaten.util';
 
 const CURRENT_DIR = process.cwd();
 
@@ -10,19 +11,17 @@ const CURRENT_DIR = process.cwd();
 {
     const args = getArgs();
 
+    const { project, group, env, uri, spn, password, tenant } = args;
+
     // initializes key vault handler
-    const keyVault = new AzureKeyVault({
-        project: args.project,
-        group: args.group,
-        env: args.env
-    }, {
-        keyVaultUri: args.uri,
-        clientId: args.spn,
-        clientSecret: args.password,
-        tenantId: args.tenant
+    const keyVault = new AzureKeyVault({ project, group, env }, {
+        keyVaultUri: uri,
+        clientId: spn,
+        clientSecret: password,
+        tenantId: tenant
     });
 
-    // command routering
+    // command reducer
     switch (args.cmd)
     {
         case 'getFor':
@@ -37,19 +36,33 @@ const CURRENT_DIR = process.cwd();
 
                 // reads secrets definition file
                 const input = require(path.resolve(CURRENT_DIR, file));
-                const secrets = await keyVault.getFor(input);
+                console.log(JSON.stringify(flatten(input), null, 4));
+                const flat = flatten(input);
+                const restored = deflatten(flat);
+                console.log(JSON.stringify(restored, null, 4));
 
-                // saves output file with secrets
-                const data = JSON.stringify(secrets, null, 4);
-                fs.writeFileSync(path.resolve(CURRENT_DIR, output), data);
+                // const secrets = await keyVault.getFor(flattenObj(input));
+
+                // // saves output file with secrets
+                // const data = JSON.stringify(assignValues(input, secrets), null, 4);
+                // fs.writeFileSync(path.resolve(CURRENT_DIR, output), data);
             }
             break;
 
         case 'update':
-            console.log('yeh');
+            {
+                const { file } = args;
+
+                if (!file)
+                    throw new Error('"file" param is required"');
+
+                // updates key vault secrets
+                const secrets = require(path.resolve(CURRENT_DIR, file));
+                await keyVault.setAll(secrets);
+            }
             break;
 
         default:
-            throw new Error(`akv command "${args._[0]}" doesn't exists`);
+            throw new Error(`akv command "${args.cmd}" doesn't exists`);
     }
 })();

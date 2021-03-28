@@ -9,11 +9,12 @@
  * @author Alvear Candia, Cristopher Alejandro <calvear93@gmail.com>
  *
  * Created at     : 2021-03-12 18:06:29
- * Last modified  : 2021-03-27 19:30:18
+ * Last modified  : 2021-03-27 22:26:49
  */
 
 const { DefaultAzureCredential } = require('@azure/identity');
 const { SecretClient } = require('@azure/keyvault-secrets');
+import { flatten, deflatten } from './flatten.util';
 
 /**
  * Azure Key Vault handler.
