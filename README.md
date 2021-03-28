@@ -237,7 +237,7 @@ You should define your npm script command in **package.json** as:
 | `--output` | (string) relative uri for result secrets JSON file                           |
 
 ```cmd
-foo@bar:~$ npm run akv getFor \
+foo@bar:~$ npm run akv getFor -- \
     --env=dev \
     --uri=https://my-key-vault.vault.azure.net \
     --spn=f176a774-239e-4cd3-8551-88fd9fb9b441 \
@@ -254,7 +254,7 @@ foo@bar:~$ npm run akv getFor \
 | `--output` | (string) relative uri for result secrets JSON file |
 
 ```cmd
-foo@bar:~$ npm run akv getAll \
+foo@bar:~$ npm run akv getAll -- \
     --env=dev \
     --uri=https://my-key-vault.vault.azure.net \
     --spn=f176a774-239e-4cd3-8551-88fd9fb9b441 \
@@ -270,7 +270,7 @@ foo@bar:~$ npm run akv getAll \
 | `--file`   | (string) relative uri (from cmd root) for JSON file with secrets |
 
 ```cmd
-foo@bar:~$ npm run akv publish \
+foo@bar:~$ npm run akv publish -- \
     --env=dev \
     --uri=https://my-key-vault.vault.azure.net \
     --spn=f176a774-239e-4cd3-8551-88fd9fb9b441 \

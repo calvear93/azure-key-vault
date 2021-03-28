@@ -9,7 +9,7 @@
  * @author Alvear Candia, Cristopher Alejandro <calvear93@gmail.com>
  *
  * Created at     : 2021-03-12 18:06:29
- * Last modified  : 2021-03-28 12:05:01
+ * Last modified  : 2021-03-28 14:12:30
  */
 
 const { DefaultAzureCredential } = require('@azure/identity');
@@ -242,7 +242,7 @@ export default class AzureKeyVault
                 secrets[name] = await this.get(key);
         }
 
-        return secrets;
+        return deflatten(secrets);
     }
 
     /**
