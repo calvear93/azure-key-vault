@@ -29,7 +29,7 @@ export function getArgs()
     // extracts cmd and options from args
     const [ cmd, ...options ] = args._;
 
-    args.cmd = cmd;
+    args.cmd = cmd?.toLowerCase();
     args.options = options;
 
     return args;

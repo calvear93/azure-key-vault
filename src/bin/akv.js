@@ -23,7 +23,7 @@ const CURRENT_DIR = process.cwd();
     // command reducer
     switch (args.cmd)
     {
-        case 'getFor':
+        case 'getfor':
             {
                 const { file, output, override } = args;
 
@@ -43,7 +43,23 @@ const CURRENT_DIR = process.cwd();
             }
             break;
 
-        case 'update':
+        case 'getall':
+            {
+                const { output } = args;
+
+                if (!output)
+                    throw new Error('"output" param is required');
+
+                // gets all secrets
+                const secrets = await keyVault.getAll();
+
+                // saves output file with secrets
+                const data = JSON.stringify(secrets, null, 4);
+                fs.writeFileSync(path.resolve(CURRENT_DIR, output), data);
+            }
+            break;
+
+        case 'publish':
             {
                 const { file } = args;
 
@@ -54,6 +70,14 @@ const CURRENT_DIR = process.cwd();
                 const secrets = require(path.resolve(CURRENT_DIR, file));
                 await keyVault.setAll(secrets);
             }
+            break;
+
+        case 'clear':
+            await keyVault.deleteAll();
+            break;
+
+        case 'restore':
+            await keyVault.restoreAll();
             break;
 
         default:
