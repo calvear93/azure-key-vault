@@ -9,7 +9,7 @@
  * @author Alvear Candia, Cristopher Alejandro <calvear93@gmail.com>
  *
  * Created at     : 2021-03-12 18:06:29
- * Last modified  : 2021-03-27 22:26:49
+ * Last modified  : 2021-03-28 11:29:39
  */
 
 const { DefaultAzureCredential } = require('@azure/identity');
@@ -68,11 +68,17 @@ export default class AzureKeyVault
     {
         return `${this.prefix}-${key}`
             .replace(/[_ ]+/g, '-')
+            .replace(/:/g, '--')
             .toLowerCase();
     }
 
     /**
      * Retrieves a secret.
+     *
+     * [!] key should match ^[0-9a-zA-Z-]+$ pattern.
+     *
+     * [i] for nested property, you can use :, for example:
+     *  const carName = await keyVault.get('car:name');
      *
      * @param {string} key secret key
      *
@@ -95,6 +101,11 @@ export default class AzureKeyVault
     /**
      * Retrieves a secret.
      *
+     * [!] key should match ^[0-9a-zA-Z-]+$ pattern.
+     *
+     * [i] for nested property, you can use :, for example:
+     *  const carName = await keyVault.getInfo('car:name');
+     *
      * @param {string} key secret key
      *
      * @returns {any} secret
@@ -107,6 +118,11 @@ export default class AzureKeyVault
     /**
      * Inserts or updates a secret.
      *
+     * [!] key should match ^[0-9a-zA-Z-]+$ pattern.
+     *
+     * [i] for nested property, you can use :, for example:
+     *  const carName = await keyVault.set('car:name');
+     *
      * @param {string} key secret key
      * @param {string} value secret value
      *
@@ -114,12 +130,16 @@ export default class AzureKeyVault
      */
     set(key, value)
     {
+        // extracts name and member path in case of nested prop.
+        const [ name, ...path ] = key.split(':').reverse();
+
         return this.client.setSecret(
             this.secretName(key),
             value,
             {
                 tags: {
-                    name: key,
+                    name,
+                    path: path.reverse().join(':'),
                     env: this.env,
                     project: this.project,
                     group: this.group
@@ -130,6 +150,11 @@ export default class AzureKeyVault
 
     /**
      * Deletes a secret.
+     *
+     * [!] key should match ^[0-9a-zA-Z-]+$ pattern.
+     *
+     * [i] for nested property, you can use :, for example:
+     *  await keyVault.delete('car:name');
      *
      * @param {string} key secret key
      *
@@ -150,6 +175,11 @@ export default class AzureKeyVault
     /**
      * Purges a deleted secret.
      *
+     * [!] key should match ^[0-9a-zA-Z-]+$ pattern.
+     *
+     * [i] for nested property, you can use :, for example:
+     *  await keyVault.purge('car:name');
+     *
      * @param {string} key secret key
      *
      * @returns {any} purge info
@@ -168,6 +198,11 @@ export default class AzureKeyVault
 
     /**
      * Restores a deleted secret.
+     *
+     * [!] key should match ^[0-9a-zA-Z-]+$ pattern.
+     *
+     * [i] for nested property, you can use :, for example:
+     *  await keyVault.restore('car:name');
      *
      * @param {string} key secret key
      *
@@ -199,10 +234,12 @@ export default class AzureKeyVault
 
         for await (const { tags } of this.client.listPropertiesOfSecrets())
         {
-            const { project, env, group, name } = tags ?? {};
+            const { project, env, group, name, path } = tags ?? {};
+
+            const key = (path ? `${path}:` : '') + name;
 
             if (project === this.project && group === this.group && env === this.env)
-                secrets[name] = await this.get(name);
+                secrets[name] = await this.get(key);
         }
 
         return secrets;
@@ -221,6 +258,9 @@ export default class AzureKeyVault
     async getFor(secrets)
     {
         let promises = {};
+
+        // multi level nested json support.
+        secrets = flatten(secrets);
 
         // executes secret request
         for (const key in secrets)
@@ -241,7 +281,7 @@ export default class AzureKeyVault
             }
         }
 
-        return secrets;
+        return deflatten(secrets);
     }
 
     /**
@@ -254,6 +294,9 @@ export default class AzureKeyVault
     async setAll(secrets)
     {
         const results = [];
+
+        // multi level nested json support.
+        secrets = flatten(secrets);
 
         for (const key in secrets)
             results.push(await this.set(key, secrets[key]));
@@ -268,10 +311,12 @@ export default class AzureKeyVault
     {
         for await (const { tags } of this.client.listPropertiesOfSecrets())
         {
-            const { project, env, group, name } = tags ?? {};
+            const { project, env, group, name, path } = tags ?? {};
+
+            const key = (path ? `${path}:` : '') + name;
 
             if (project === this.project && group === this.group && env === this.env)
-                await this.delete(name);
+                await this.delete(key);
         }
     }
 
@@ -282,10 +327,12 @@ export default class AzureKeyVault
     {
         for await (const { properties: tags } of this.client.listDeletedSecrets())
         {
-            const { project, env, group, name } = tags ?? {};
+            const { project, env, group, name, path } = tags ?? {};
+
+            const key = (path ? `${path}:` : '') + name;
 
             if (project === this.project && group === this.group && env === this.env)
-                await this.purge(name);
+                await this.purge(key);
         }
     }
 
@@ -296,10 +343,12 @@ export default class AzureKeyVault
     {
         for await (const { tags } of this.client.listDeletedSecrets())
         {
-            const { project, env, group, name } = tags ?? {};
+            const { project, env, group, name, path } = tags ?? {};
+
+            const key = (path ? `${path}:` : '') + name;
 
             if (project === this.project && group === this.group && env === this.env)
-                await this.restore(name);
+                await this.restore(key);
         }
     }
 }

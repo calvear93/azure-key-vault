@@ -3,7 +3,6 @@ import fs from 'fs';
 import path from 'path';
 import AzureKeyVault from '../azure-key-vault.service';
 import { getArgs } from './cmd.util';
-import { flatten, deflatten } from '../flaten.util';
 
 const CURRENT_DIR = process.cwd();
 
@@ -29,23 +28,18 @@ const CURRENT_DIR = process.cwd();
                 const { file, output } = args;
 
                 if (!file)
-                    throw new Error('"file" param is required"');
+                    throw new Error('"file" param is required');
 
                 if (!output)
-                    throw new Error('"output" param is required"');
+                    throw new Error('"output" param is required');
 
                 // reads secrets definition file
                 const input = require(path.resolve(CURRENT_DIR, file));
-                console.log(JSON.stringify(flatten(input), null, 4));
-                const flat = flatten(input);
-                const restored = deflatten(flat);
-                console.log(JSON.stringify(restored, null, 4));
+                const secrets = await keyVault.getFor(input);
 
-                // const secrets = await keyVault.getFor(flattenObj(input));
-
-                // // saves output file with secrets
-                // const data = JSON.stringify(assignValues(input, secrets), null, 4);
-                // fs.writeFileSync(path.resolve(CURRENT_DIR, output), data);
+                // saves output file with secrets
+                const data = JSON.stringify(secrets, null, 4);
+                fs.writeFileSync(path.resolve(CURRENT_DIR, output), data);
             }
             break;
 
@@ -54,7 +48,7 @@ const CURRENT_DIR = process.cwd();
                 const { file } = args;
 
                 if (!file)
-                    throw new Error('"file" param is required"');
+                    throw new Error('"file" param is required');
 
                 // updates key vault secrets
                 const secrets = require(path.resolve(CURRENT_DIR, file));
