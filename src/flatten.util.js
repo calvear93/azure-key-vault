@@ -13,10 +13,12 @@ export function flatten(obj, pkey)
 
     for (const key in obj)
     {
+        pkey = pkey ? `${pkey}--` : '';
+
         if (typeof obj[key] === 'object' && obj[key] !== null)
-            Object.assign(flattened, flatten(obj[key], `${pkey ? `${pkey}--` : ''}${key}`));
+            Object.assign(flattened, flatten(obj[key], `${pkey}${key}`));
         else
-            flattened[`${pkey ? `${pkey}--` : ''}${key}`] = obj[key];
+            flattened[`${pkey}${key}`] = obj[key];
     }
 
     return flattened;
