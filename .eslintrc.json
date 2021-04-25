@@ -163,7 +163,12 @@
         "no-throw-literal": "error",
         "no-trailing-spaces": "warn",
         "no-unneeded-ternary": "warn",
-        "no-unused-vars": "warn",
+        "no-unused-vars": [
+            "warn",
+            {
+                "varsIgnorePattern": "_"
+            }
+        ],
         "object-curly-spacing": [
             "warn",
             "always"
