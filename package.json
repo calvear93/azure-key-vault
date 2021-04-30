@@ -9,11 +9,13 @@
   "repository": "https://github.com/calvear93/azure-key-vault",
   "main": "dist/index.js",
   "files": [
-    "dist"
+    "dist",
+    "types"
   ],
   "bin": {
     "akv": "dist/bin/akv.js"
   },
+  "types": "types/index.d.ts",
   "keywords": [
     "azure",
     "key-vault",

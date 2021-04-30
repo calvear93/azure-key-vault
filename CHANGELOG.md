@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [1.1.3] - 2021-04-30
 -   fixed bad nesting handling.
+-   added Typescript types.
 
 ## [1.1.2] - 2021-04-25
 -   dependencies updated.
