@@ -7,16 +7,14 @@
  *
  * @returns {any} flatten object.
  */
-export function flatten(obj, pkey)
+export function flatten(obj, pkey = '')
 {
     const flattened = {};
 
     for (const key in obj)
     {
-        pkey = pkey ? `${pkey}--` : '';
-
         if (typeof obj[key] === 'object' && obj[key] !== null)
-            Object.assign(flattened, flatten(obj[key], `${pkey}${key}`));
+            Object.assign(flattened, flatten(obj[key], `${pkey}${key}--`));
         else
             flattened[`${pkey}${key}`] = obj[key];
     }
