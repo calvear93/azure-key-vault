@@ -85,9 +85,10 @@ Library has functions for manage key vault secrets.
 
 -   **get**: returns secret value.
 
-| Parameters | Description                                                         |
-| ---------- | ------------------------------------------------------------------- |
-| `key`      | (string) secret key, use ':' for nested path, (i.e. car:props:name) |
+| Parameters   | Description                                                         |
+| ------------ | ------------------------------------------------------------------- |
+| `key`        | (string) secret key, use ':' for nested path, (i.e. car:props:name) |
+| `serialized` | (boolean) whether value is serialized                               |
 
 ```javascript
 const value = await keyVault.get('my-secret');
@@ -150,7 +151,7 @@ const restoredInfo = await keyVault.restore('my-secret');
 const listOfSecrets = await keyVault.getAll();
 ```
 
--   **getFor**: (faster than getAll) gets all secrets for the project, env and group defined in input object.
+-   **getFor**: (faster than getAll) gets all secrets for the project, env and group defined in input object. **In order to get array correctly deserialized, use [] as default value instead of null or undefined**.
 
 | Parameters   | Description                                                                      |
 | ------------ | -------------------------------------------------------------------------------- |
