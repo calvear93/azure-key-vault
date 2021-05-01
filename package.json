@@ -1,5 +1,5 @@
 {
-  "version": "1.1.5",
+  "version": "1.1.6",
   "name": "@calvear/azure-key-vault",
   "title": "Azure Key Vault handler",
   "description": "Azure Key Vault handler, abstracts secrets management by project, environment and group when vault is shared.",
