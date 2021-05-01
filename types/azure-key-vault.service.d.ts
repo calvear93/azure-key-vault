@@ -38,7 +38,7 @@ export declare class AzureKeyVault
      * @private
      * @type {string}
      */
-    private group: string;
+    private group?: string;
 
     /**
      * Secrets environment.
@@ -46,7 +46,7 @@ export declare class AzureKeyVault
      * @private
      * @type {string}
      */
-    private env: string;
+    private env?: string;
 
     /**
      * Validates emptiness of an object.

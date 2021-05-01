@@ -8,8 +8,8 @@
 export interface AzureKeyVaultConfig
 {
     project: string,
-    group: string,
-    env: string
+    group?: string,
+    env?: string
 }
 
 /**
