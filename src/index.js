@@ -1,1 +1,1 @@
-export { default } from './azure-key-vault.service';
+export { default as AzureKeyVault } from './azure-key-vault.service';

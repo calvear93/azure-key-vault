@@ -22,7 +22,7 @@ export declare class AzureKeyVault
      * @param {string} credentials.clientSecret service principal name secret password
      * @param {string} credentials.tenantId tenant id
      */
-    constructor (config: AzureKeyVaultConfig, credentials?: AzureKeyVaultCredentials);
+    constructor(config: AzureKeyVaultConfig, credentials?: AzureKeyVaultCredentials);
 
     /**
      * Retrieves secret name for current project group.
