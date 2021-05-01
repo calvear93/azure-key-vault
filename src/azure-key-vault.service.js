@@ -9,11 +9,11 @@
  * @author Alvear Candia, Cristopher Alejandro <calvear93@gmail.com>
  *
  * Created at     : 2021-03-12 18:06:29
- * Last modified  : 2021-03-28 14:12:30
+ * Last modified  : 2021-05-01 14:59:38
  */
 
-const { DefaultAzureCredential } = require('@azure/identity');
-const { SecretClient } = require('@azure/keyvault-secrets');
+import { DefaultAzureCredential } from '@azure/identity';
+import { SecretClient } from '@azure/keyvault-secrets';
 import { flatten, deflatten } from './flatten.util';
 
 /**
@@ -55,7 +55,7 @@ export default class AzureKeyVault
         this.env = env;
         // calculates secret name prefix for project group
         this.prefix = `${project}${group ? `-${group}` : ''}${env ? `-${env}` : ''}`;
-        this.client = new SecretClient(process.env.AZURE_KEY_VAULT_URI, new DefaultAzureCredential());
+        this.client = new SecretClient(process.env.AZURE_KEY_VAULT_URI ?? '', new DefaultAzureCredential());
     }
 
     /**
@@ -82,7 +82,7 @@ export default class AzureKeyVault
      *
      * @param {string} key secret key
      *
-     * @returns {any} secret
+     * @returns {any | null} secret
      */
     async get(key)
     {
@@ -108,7 +108,7 @@ export default class AzureKeyVault
      *
      * @param {string} key secret key
      *
-     * @returns {any} secret
+     * @returns {Promise<any>} secret
      */
     getInfo(key)
     {
@@ -126,7 +126,7 @@ export default class AzureKeyVault
      * @param {string} key secret key
      * @param {string} value secret value
      *
-     * @returns {any} secret properties
+     * @returns {Promise<any>} secret properties
      */
     set(key, value)
     {
@@ -158,13 +158,15 @@ export default class AzureKeyVault
      *
      * @param {string} key secret key
      *
-     * @returns {any} deletion info
+     * @returns {Promise<any>} deletion info
      */
-    delete(key)
+    async delete(key)
     {
         try
         {
-            return this.client.beginDeleteSecret(this.secretName(key));
+            const poller = await this.client.beginDeleteSecret(this.secretName(key));
+
+            return await poller.pollUntilDone();
         }
         catch
         {
@@ -182,7 +184,7 @@ export default class AzureKeyVault
      *
      * @param {string} key secret key
      *
-     * @returns {any} purge info
+     * @returns {Promise<any>} purge info
      */
     purge(key)
     {
@@ -206,13 +208,15 @@ export default class AzureKeyVault
      *
      * @param {string} key secret key
      *
-     * @returns {any} restoration info
+     * @returns {Promise<any>} restoration info
      */
-    restore(key)
+    async restore(key)
     {
         try
         {
-            return this.client.restoreSecretBackup(this.secretName(key));
+            const recover = await this.client.beginRecoverDeletedSecret(this.secretName(key));
+
+            return await recover.pollUntilDone();
         }
         catch
         {
@@ -226,7 +230,7 @@ export default class AzureKeyVault
      * [i] iterates over every secret in key vault,
      * so this function may be slow. Prefer getFor().
      *
-     * @returns {Array<any>} project group secrets list
+     * @returns {Promise<Array<any>>} project group secrets list
      */
     async getAll()
     {

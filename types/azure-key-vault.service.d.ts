@@ -1,3 +1,4 @@
+import { SecretClient } from '@azure/keyvault-secrets';
 import { AzureKeyVaultConfig, AzureKeyVaultCredentials } from './azure-key-vault';
 
 /**
@@ -7,6 +8,46 @@ import { AzureKeyVaultConfig, AzureKeyVaultCredentials } from './azure-key-vault
  */
 export declare class AzureKeyVault
 {
+    /**
+     * Azure Key Vault client.
+     *
+     * @private
+     * @type {SecretClient}
+     */
+    public client: SecretClient;
+
+    /**
+     * Secret prefix.
+     *
+     * @private
+     * @type {string}
+     */
+    private prefix: string;
+
+    /**
+     * Project name.
+     *
+     * @private
+     * @type {string}
+     */
+    private project: string;
+
+    /**
+     * Secrets group.
+     *
+     * @private
+     * @type {string}
+     */
+    private group: string;
+
+    /**
+     * Secrets environment.
+     *
+     * @private
+     * @type {string}
+     */
+    private env: string;
+
     /**
      * Validates emptiness of an object.
      *
@@ -30,7 +71,7 @@ export declare class AzureKeyVault
      * @param {string} key secret key
      * @returns {string} secret name
      */
-    secretName(key: string): string;
+    public secretName(key: string): string;
 
     /**
      * Retrieves a secret.
@@ -44,7 +85,7 @@ export declare class AzureKeyVault
      *
      * @returns {any} secret
      */
-    get(key: string): Promise<any>
+    public get(key: string): Promise<any>
 
     /**
      * Retrieves a secret.
@@ -58,7 +99,7 @@ export declare class AzureKeyVault
      *
      * @returns {any} secret
      */
-    getInfo(key: string): Promise<any>
+    public getInfo(key: string): Promise<any>
 
     /**
      * Inserts or updates a secret.
@@ -73,7 +114,7 @@ export declare class AzureKeyVault
      *
      * @returns {any} secret properties
      */
-    set(key: string, value: string): Promise<any>
+    public set(key: string, value: string): Promise<any>
 
     /**
      * Deletes a secret.
@@ -87,7 +128,7 @@ export declare class AzureKeyVault
      *
      * @returns {any} deletion info
      */
-    delete(key: string): Promise<any>
+    public delete(key: string): Promise<any>
 
     /**
      * Purges a deleted secret.
@@ -101,7 +142,7 @@ export declare class AzureKeyVault
      *
      * @returns {any} purge info
      */
-    purge(key: string): Promise<any>
+    public purge(key: string): Promise<any>
 
     /**
      * Restores a deleted secret.
@@ -115,7 +156,7 @@ export declare class AzureKeyVault
      *
      * @returns {any} restoration info
      */
-    restore(key: string): Promise<any>
+    public restore(key: string): Promise<any>
 
     /**
      * Retrieves all secrets for the project group.
@@ -125,7 +166,7 @@ export declare class AzureKeyVault
      *
      * @returns {Promise<any>} project group secrets list
      */
-    getAll(): Promise<any>
+    public getAll(): Promise<any>
 
     /**
      * Retrieves secrets for the project group defined in secrets input.
@@ -138,7 +179,7 @@ export declare class AzureKeyVault
      *
      * @returns {Promise<any>} project group secrets list
      */
-    getFor(secrets: any, override?: boolean): Promise<any>
+    public getFor(secrets: any, override?: boolean): Promise<any>
 
     /**
      * Insert or updates many secrets.
@@ -148,20 +189,20 @@ export declare class AzureKeyVault
      *
      * @returns {Promise<any>} secrets properties
      */
-    setAll(secrets: any): Promise<any>
+    public setAll(secrets: any): Promise<any>
 
     /**
      * Deletes every secrets for the project group.
      */
-    deleteAll(): Promise<void>
+    public deleteAll(): Promise<void>
 
     /**
      * Purges every deleted secrets for the project group.
      */
-    purgeAll(): Promise<void>
+    public purgeAll(): Promise<void>
 
     /**
      * Restores every deleted secrets for the project group.
      */
-    restoreAll(): Promise<void>
+    public restoreAll(): Promise<void>
 }
