@@ -9,7 +9,7 @@
  * @author Alvear Candia, Cristopher Alejandro <calvear93@gmail.com>
  *
  * Created at     : 2021-03-12 18:06:29
- * Last modified  : 2021-05-01 14:59:38
+ * Last modified  : 2021-05-01 15:19:50
  */
 
 import { DefaultAzureCredential } from '@azure/identity';
@@ -258,7 +258,7 @@ export default class AzureKeyVault
      * @param {object} secrets object with secrets (key, value).
      * @param {boolean} override if override secrets with default value.
      *
-     * @returns {Array<any>} project group secrets list
+     * @returns {Promise<Array<any>>} project group secrets list
      */
     async getFor(secrets, override = false)
     {
@@ -294,7 +294,7 @@ export default class AzureKeyVault
      *
      * @param {object} secrets dictionary with secrets (key, value).
      *
-     * @returns {Array<any>} secrets properties
+     * @returns {Promise<Array<any>>} secrets properties
      */
     async setAll(secrets)
     {
@@ -311,6 +311,8 @@ export default class AzureKeyVault
 
     /**
      * Deletes every secrets for the project group.
+     *
+     * @returns {Promise<void>}
      */
     async deleteAll()
     {
@@ -327,6 +329,8 @@ export default class AzureKeyVault
 
     /**
      * Purges every deleted secrets for the project group.
+     *
+     * @returns {Promise<void>}
      */
     async purgeAll()
     {
@@ -343,6 +347,8 @@ export default class AzureKeyVault
 
     /**
      * Restores every deleted secrets for the project group.
+     *
+     * @returns {Promise<void>}
      */
     async restoreAll()
     {

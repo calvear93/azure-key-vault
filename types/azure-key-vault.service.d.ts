@@ -53,11 +53,11 @@ export declare class AzureKeyVault
      *
      * @constructor
      *
-     * @param {AzureKeyVaultConfig} config key vault config
+     * @param {object} config key vault config
      * @param {string} config.project variables project
      * @param {string} config.group variables group
      * @param {string} config.env environment
-     * @param {AzureKeyVaultCredentials} [credentials] key vault config
+     * @param {object} [credentials] key vault config
      * @param {string} credentials.keyVaultUri azure key vault uri
      * @param {string} credentials.clientId service principal name id
      * @param {string} credentials.clientSecret service principal name secret password
@@ -83,7 +83,7 @@ export declare class AzureKeyVault
      *
      * @param {string} key secret key
      *
-     * @returns {any} secret
+     * @returns {any | null} secret
      */
     public get(key: string): Promise<any>
 
@@ -97,7 +97,7 @@ export declare class AzureKeyVault
      *
      * @param {string} key secret key
      *
-     * @returns {any} secret
+     * @returns {Promise<any>} secret
      */
     public getInfo(key: string): Promise<any>
 
@@ -112,7 +112,7 @@ export declare class AzureKeyVault
      * @param {string} key secret key
      * @param {string} value secret value
      *
-     * @returns {any} secret properties
+     * @returns {Promise<any>} secret properties
      */
     public set(key: string, value: string): Promise<any>
 
@@ -126,7 +126,7 @@ export declare class AzureKeyVault
      *
      * @param {string} key secret key
      *
-     * @returns {any} deletion info
+     * @returns {Promise<any>} deletion info
      */
     public delete(key: string): Promise<any>
 
@@ -140,7 +140,7 @@ export declare class AzureKeyVault
      *
      * @param {string} key secret key
      *
-     * @returns {any} purge info
+     * @returns {Promise<any>} purge info
      */
     public purge(key: string): Promise<any>
 
@@ -154,7 +154,7 @@ export declare class AzureKeyVault
      *
      * @param {string} key secret key
      *
-     * @returns {any} restoration info
+     * @returns {Promise<any>} restoration info
      */
     public restore(key: string): Promise<any>
 
@@ -174,10 +174,10 @@ export declare class AzureKeyVault
      *
      * [i] faster than getAll()
      *
-     * @param {any} secrets object with secrets (key, value).
+     * @param {object} secrets object with secrets (key, value).
      * @param {boolean} override if override secrets with default value.
      *
-     * @returns {Promise<any>} project group secrets list
+     * @returns {Promise<Array<any>>} project group secrets list
      */
     public getFor(secrets: any, override?: boolean): Promise<any>
 
@@ -193,16 +193,22 @@ export declare class AzureKeyVault
 
     /**
      * Deletes every secrets for the project group.
+     *
+     * @returns {Promise<void>}
      */
     public deleteAll(): Promise<void>
 
     /**
      * Purges every deleted secrets for the project group.
+     *
+     * @returns {Promise<void>}
      */
     public purgeAll(): Promise<void>
 
     /**
      * Restores every deleted secrets for the project group.
+     *
+     * @returns {Promise<void>}
      */
     public restoreAll(): Promise<void>
 }
