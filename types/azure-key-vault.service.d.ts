@@ -176,7 +176,7 @@ export declare class AzureKeyVault
      * [i] in order to get array correctly deserialized,
      *  use [] as default value instead of null or undefined.
      *
-     * [i] faster than getAll()
+     * [i] about 4 times faster than getAll()
      *
      * @param {object} secrets object with secrets (key, value).
      * @param {boolean} override if override secrets with default value.

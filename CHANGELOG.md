@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [1.1.5] - 2021-05-01
 -   fixed types.
 -   fixed delete and restore.
+-   added array support.
+-   added serializing option to set.
 
 ## [1.1.3] - 2021-04-30
 -   fixed bad nesting handling.

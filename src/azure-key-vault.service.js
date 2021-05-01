@@ -9,7 +9,7 @@
  * @author Alvear Candia, Cristopher Alejandro <calvear93@gmail.com>
  *
  * Created at     : 2021-03-12 18:06:29
- * Last modified  : 2021-05-01 17:09:09
+ * Last modified  : 2021-05-01 17:26:12
  */
 
 import { DefaultAzureCredential } from '@azure/identity';
@@ -262,7 +262,7 @@ export default class AzureKeyVault
      * [i] in order to get array correctly deserialized,
      *  use [] as default value instead of null or undefined.
      *
-     * [i] faster than getAll()
+     * [i] about 4 times faster than getAll()
      *
      * @param {object} secrets object with secrets (key, value).
      * @param {boolean} override if override secrets with default value.
