@@ -82,10 +82,11 @@ export declare class AzureKeyVault
      *  const carName = await keyVault.get('car:name');
      *
      * @param {string} key secret key
+     * @param {bool} serialized whether value is serialized
      *
-     * @returns {any | null} secret
+     * @returns {any | string | null} secret
      */
-    public get(key: string): Promise<any>
+    public get(key: string, serialized?: boolean): Promise<any>
 
     /**
      * Retrieves a secret.
@@ -110,11 +111,11 @@ export declare class AzureKeyVault
      *  const carName = await keyVault.set('car:name');
      *
      * @param {string} key secret key
-     * @param {string} value secret value
+     * @param {string | any} value secret value
      *
      * @returns {Promise<any>} secret properties
      */
-    public set(key: string, value: string): Promise<any>
+    public set(key: string, value: string | any): Promise<any>
 
     /**
      * Deletes a secret.
@@ -171,6 +172,9 @@ export declare class AzureKeyVault
     /**
      * Retrieves secrets for the project group defined in secrets input.
      * Value for input secret will be replaced if Kev Vault has it.
+     *
+     * [i] in order to get array correctly deserialized,
+     *  use [] as default value instead of null or undefined.
      *
      * [i] faster than getAll()
      *

@@ -9,7 +9,7 @@
  * @author Alvear Candia, Cristopher Alejandro <calvear93@gmail.com>
  *
  * Created at     : 2021-03-12 18:06:29
- * Last modified  : 2021-05-01 15:19:50
+ * Last modified  : 2021-05-01 17:09:09
  */
 
 import { DefaultAzureCredential } from '@azure/identity';
@@ -81,16 +81,17 @@ export default class AzureKeyVault
      *  const carName = await keyVault.get('car:name');
      *
      * @param {string} key secret key
+     * @param {bool} serialized whether value is serialized
      *
-     * @returns {any | null} secret
+     * @returns {any | string | null} secret
      */
-    async get(key)
+    async get(key, serialized = false)
     {
         try
         {
             const { value } = await this.client.getSecret(this.secretName(key));
 
-            return value;
+            return serialized ? JSON.parse(value) : value;
         }
         catch
         {
@@ -122,9 +123,10 @@ export default class AzureKeyVault
      *
      * [i] for nested property, you can use :, for example:
      *  const carName = await keyVault.set('car:name');
+     * [i] not string value will be serialized.
      *
      * @param {string} key secret key
-     * @param {string} value secret value
+     * @param {string | any} value secret value
      *
      * @returns {Promise<any>} secret properties
      */
@@ -133,16 +135,19 @@ export default class AzureKeyVault
         // extracts name and member path in case of nested prop.
         const [ name, ...path ] = key.split(':').reverse();
 
+        const shouldBeSerialized = typeof value !== 'string';
+
         return this.client.setSecret(
             this.secretName(key),
-            value,
+            shouldBeSerialized ? JSON.stringify(value) : value,
             {
                 tags: {
                     name,
                     path: path.reverse().join(':'),
                     env: this.env,
                     project: this.project,
-                    group: this.group
+                    group: this.group,
+                    serialized: shouldBeSerialized ? '1' : '0'
                 }
             }
         );
@@ -238,12 +243,13 @@ export default class AzureKeyVault
 
         for await (const { tags } of this.client.listPropertiesOfSecrets())
         {
-            const { project, env, group, name, path } = tags ?? {};
+            const { project, env, group, name, path, serialized } = tags ?? {};
 
             const key = (path ? `${path}:` : '') + name;
+            const isSerialized = !!+serialized;
 
             if (project === this.project && group === this.group && env === this.env)
-                secrets[name] = await this.get(key);
+                secrets[name] = await this.get(key, isSerialized);
         }
 
         return deflatten(secrets);
@@ -252,6 +258,9 @@ export default class AzureKeyVault
     /**
      * Retrieves secrets for the project group defined in secrets input.
      * Value for input secret will be replaced if Kev Vault has it.
+     *
+     * [i] in order to get array correctly deserialized,
+     *  use [] as default value instead of null or undefined.
      *
      * [i] faster than getAll()
      *
@@ -267,9 +276,18 @@ export default class AzureKeyVault
         // multi level nested json support.
         secrets = flatten(secrets);
 
-        // executes secret request
+        // executes request
         for (const key in secrets)
-            promises[key] = !override && secrets[key] ? secrets[key] : this.get(key);
+        {
+            const isArray = Array.isArray(secrets[key]);
+
+            if (override)
+                promises[key] = this.get(key, isArray);
+            else if (!secrets[key] || isArray && secrets[key].length === 0)
+                promises[key] = this.get(key, Array.isArray(secrets[key]));
+            else
+                promises[key] = secrets[key];
+        }
 
         for (const key in secrets)
         {
