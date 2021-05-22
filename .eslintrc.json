@@ -109,6 +109,7 @@
         "jsdoc/require-property-description": "off",
         "jsdoc/require-returns-description": "off",
         "jsdoc/require-throws": "warn",
+        "jsdoc/tag-lines": "off",
         "jsx-quotes": [
             "warn",
             "prefer-single"
