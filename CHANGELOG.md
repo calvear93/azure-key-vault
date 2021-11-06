@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0] - 2021-11-05
+
+-   azure identity updated.
+
 ## [1.1.7] - 2021-06-23
 
 -   dependencies updated.
