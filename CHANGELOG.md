@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.1] - 2021-11-05
+
+-   fix async to regenerator.
+
 ## [2.0.0] - 2021-11-05
 
 -   azure identity updated.

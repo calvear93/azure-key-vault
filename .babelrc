@@ -1,10 +1,11 @@
 {
-    "presets": ["@babel/preset-env"],
-    "plugins": [
+    "presets": [
         [
-            "@babel/plugin-transform-runtime",
+            "@babel/preset-env",
             {
-                "regenerator": true
+                "targets": {
+                    "esmodules": true
+                }
             }
         ]
     ]
