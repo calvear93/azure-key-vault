@@ -31,13 +31,13 @@
     "minimist": "^1.2.5"
   },
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/eslint-parser": "^7.16.0",
-    "@babel/preset-env": "^7.16.0",
-    "eslint": "^8.2.0",
-    "eslint-plugin-import": "^2.25.2",
-    "eslint-plugin-jsdoc": "^37.0.3",
-    "eslint-plugin-sonarjs": "^0.10.0"
+    "@babel/cli": "^7.16.8",
+    "@babel/eslint-parser": "^7.16.5",
+    "@babel/preset-env": "^7.16.8",
+    "eslint": "^8.6.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jsdoc": "^37.6.1",
+    "eslint-plugin-sonarjs": "^0.11.0"
   },
   "scripts": {
     "build": "npx babel src --out-dir dist --copy-files --source-maps",
