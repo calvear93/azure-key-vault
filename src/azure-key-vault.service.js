@@ -7,9 +7,6 @@
  *
  * @summary Azure Key Vault handler.
  * @author Alvear Candia, Cristopher Alejandro <calvear93@gmail.com>
- *
- * Created at     : 2021-03-12 18:06:29
- * Last modified  : 2021-05-01 17:26:12
  */
 
 import { DefaultAzureCredential } from '@azure/identity';
@@ -30,6 +27,7 @@ export default class AzureKeyVault
      * @param {string} config.project variables project
      * @param {string} config.group variables group
      * @param {string} config.env environment
+     * @param {string} [config.sharedGroup] variables shared group
      * @param {object} [credentials] key vault config
      * @param {string} credentials.keyVaultUri azure key vault uri
      * @param {string} credentials.clientId service principal name id
@@ -48,14 +46,15 @@ export default class AzureKeyVault
             process.env.AZURE_TENANT_ID = tenantId;
         }
 
-        const { project, group, env } = config;
+        const { project, group, env, sharedGroup = 'SHARED' } = config;
 
         this.project = project;
         this.group = group;
         this.env = env;
+        this.sharedGroup = sharedGroup; // for project shared variables
         // calculates secret name prefix for project group
         this.prefix = `${project}${group ? `-${group}` : ''}${env ? `-${env}` : ''}`;
-        this.prefixGlobal = `${project}${env ? `-${env}` : ''}`;
+        this.prefixShared = `${project}${env ? `-${env}` : ''}`;
         this.client = new SecretClient(process.env.AZURE_KEY_VAULT_URI ?? '', new DefaultAzureCredential());
     }
 
@@ -63,18 +62,18 @@ export default class AzureKeyVault
      * Retrieves secret name for current project group.
      *
      * @param {string} key secret key
+     * @param {boolean} [isShared] project shared secret (prefixed with $)
+     *
      * @returns {string} secret name
      */
-    secretName(key)
+    secretName(key, isShared = false)
     {
-        const global = key[0] === '$';
+        const prefix = isShared ? this.prefixShared : this.prefix;
 
-        if (global)
-            key = key.substring(1);
-
-        return `${global ? this.prefixGlobal : this.prefix}-${key}`
+        return `${prefix}-${key}`
             .replace(/[_ ]+/g, '-')
             .replace(/:/g, '--')
+            .replace(/[$]/g, '')
             .toLowerCase();
     }
 
@@ -85,6 +84,8 @@ export default class AzureKeyVault
      *
      * [i] for nested property, you can use :, for example:
      *  const carName = await keyVault.get('car:name');
+     * [i] for project shared property, you can prefix $, for example:
+     *  const globalVar = await keyVault.set('parent:$global_var');
      *
      * @param {string} key secret key
      * @param {bool} serialized whether value is serialized
@@ -93,9 +94,11 @@ export default class AzureKeyVault
      */
     async get(key, serialized = false)
     {
+        const isShared = key.includes('$');
+
         try
         {
-            const { value } = await this.client.getSecret(this.secretName(key));
+            const { value } = await this.client.getSecret(this.secretName(key, isShared));
 
             return serialized ? JSON.parse(value) : value;
         }
@@ -112,6 +115,8 @@ export default class AzureKeyVault
      *
      * [i] for nested property, you can use :, for example:
      *  const carName = await keyVault.getInfo('car:name');
+     * [i] for project shared property, you can prefix $, for example:
+     *  const globalVar = await keyVault.set('parent:$global_var');
      *
      * @param {string} key secret key
      *
@@ -119,7 +124,9 @@ export default class AzureKeyVault
      */
     getInfo(key)
     {
-        return this.client.getSecret(this.secretName(key));
+        const isShared = key.includes('$');
+
+        return this.client.getSecret(this.secretName(key, isShared));
     }
 
     /**
@@ -129,6 +136,8 @@ export default class AzureKeyVault
      *
      * [i] for nested property, you can use :, for example:
      *  const carName = await keyVault.set('car:name');
+     * [i] for project shared property, you can prefix $, for example:
+     *  const globalVar = await keyVault.set('parent:$global_var');
      * [i] not string value will be serialized.
      *
      * @param {string} key secret key
@@ -139,20 +148,23 @@ export default class AzureKeyVault
     set(key, value)
     {
         // extracts name and member path in case of nested prop.
-        const [ name, ...path ] = key.split(':').reverse();
+        const sections = key.split(':');
+        const path = sections.slice(0, -1).join(':') ?? '';
+        const name = sections.at(-1);
 
+        const isShared = name[0] === '$';
         const shouldBeSerialized = typeof value !== 'string';
 
         return this.client.setSecret(
-            this.secretName(key),
+            this.secretName(key, isShared),
             shouldBeSerialized ? JSON.stringify(value) : value,
             {
                 tags: {
                     name,
-                    path: path.reverse().join(':'),
+                    path,
                     env: this.env,
                     project: this.project,
-                    group: this.group,
+                    group: isShared ? this.sharedGroup : this.group,
                     serialized: shouldBeSerialized ? '1' : '0'
                 }
             }
@@ -166,6 +178,8 @@ export default class AzureKeyVault
      *
      * [i] for nested property, you can use :, for example:
      *  await keyVault.delete('car:name');
+     * [i] for project shared property, you can prefix $, for example:
+     *  const globalVar = await keyVault.set('parent:$global_var');
      *
      * @param {string} key secret key
      *
@@ -173,9 +187,11 @@ export default class AzureKeyVault
      */
     async delete(key)
     {
+        const isShared = key.includes('$');
+
         try
         {
-            const poller = await this.client.beginDeleteSecret(this.secretName(key));
+            const poller = await this.client.beginDeleteSecret(this.secretName(key, isShared));
 
             return await poller.pollUntilDone();
         }
@@ -192,6 +208,8 @@ export default class AzureKeyVault
      *
      * [i] for nested property, you can use :, for example:
      *  await keyVault.purge('car:name');
+     * [i] for project shared property, you can prefix $, for example:
+     *  const globalVar = await keyVault.set('parent:$global_var');
      *
      * @param {string} key secret key
      *
@@ -199,9 +217,11 @@ export default class AzureKeyVault
      */
     purge(key)
     {
+        const isShared = key.includes('$');
+
         try
         {
-            return this.client.purgeDeletedSecret(this.secretName(key));
+            return this.client.purgeDeletedSecret(this.secretName(key, isShared));
         }
         catch
         {
@@ -216,6 +236,8 @@ export default class AzureKeyVault
      *
      * [i] for nested property, you can use :, for example:
      *  await keyVault.restore('car:name');
+     * [i] for project shared property, you can prefix $, for example:
+     *  const globalVar = await keyVault.set('parent:$global_var');
      *
      * @param {string} key secret key
      *
@@ -223,9 +245,11 @@ export default class AzureKeyVault
      */
     async restore(key)
     {
+        const isShared = key.includes('$');
+
         try
         {
-            const recover = await this.client.beginRecoverDeletedSecret(this.secretName(key));
+            const recover = await this.client.beginRecoverDeletedSecret(this.secretName(key, isShared));
 
             return await recover.pollUntilDone();
         }
@@ -240,6 +264,8 @@ export default class AzureKeyVault
      *
      * [i] iterates over every secret in key vault,
      * so this function may be slow. Prefer getFor().
+     * [i] for project shared property, you can prefix $, for example:
+     *  const globalVar = await keyVault.set('parent:$global_var');
      *
      * @returns {Promise<Array<any>>} project group secrets list
      */
@@ -252,9 +278,10 @@ export default class AzureKeyVault
             const { project, env, group, name, path, serialized } = tags ?? {};
 
             const key = (path ? `${path}:` : '') + name;
+            const isShared = group === this.sharedGroup;
             const isSerialized = !!+serialized;
 
-            if (project === this.project && group === this.group && env === this.env)
+            if (project === this.project && env === this.env && (isShared || group === this.group))
                 secrets[name] = await this.get(key, isSerialized);
         }
 
@@ -336,17 +363,20 @@ export default class AzureKeyVault
     /**
      * Deletes every secrets for the project group.
      *
+     * @param {boolean} skipShared skips shared vars
+     *
      * @returns {Promise<void>}
      */
-    async deleteAll()
+    async deleteAll(skipShared = true)
     {
         for await (const { tags } of this.client.listPropertiesOfSecrets())
         {
             const { project, env, group, name, path } = tags ?? {};
 
             const key = (path ? `${path}:` : '') + name;
+            const isShared = !skipShared && group === this.sharedGroup;
 
-            if (project === this.project && group === this.group && env === this.env)
+            if (project === this.project && env === this.env && (isShared || group === this.group))
                 await this.delete(key);
         }
     }
@@ -354,17 +384,20 @@ export default class AzureKeyVault
     /**
      * Purges every deleted secrets for the project group.
      *
+     * @param {boolean} skipShared skips shared vars
+     *
      * @returns {Promise<void>}
      */
-    async purgeAll()
+    async purgeAll(skipShared = true)
     {
         for await (const { properties: tags } of this.client.listDeletedSecrets())
         {
             const { project, env, group, name, path } = tags ?? {};
 
             const key = (path ? `${path}:` : '') + name;
+            const isShared = !skipShared && group === this.sharedGroup;
 
-            if (project === this.project && group === this.group && env === this.env)
+            if (project === this.project && env === this.env && (isShared || group === this.group))
                 await this.purge(key);
         }
     }
@@ -372,17 +405,20 @@ export default class AzureKeyVault
     /**
      * Restores every deleted secrets for the project group.
      *
+     * @param {boolean} skipShared skips shared vars
+     *
      * @returns {Promise<void>}
      */
-    async restoreAll()
+    async restoreAll(skipShared = true)
     {
         for await (const { tags } of this.client.listDeletedSecrets())
         {
             const { project, env, group, name, path } = tags ?? {};
 
             const key = (path ? `${path}:` : '') + name;
+            const isShared = !skipShared && group === this.sharedGroup;
 
-            if (project === this.project && group === this.group && env === this.env)
+            if (project === this.project && env === this.env && (isShared || group === this.group))
                 await this.restore(key);
         }
     }

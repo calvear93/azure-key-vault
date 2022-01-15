@@ -83,12 +83,15 @@ const keyVault = new AzureKeyVault({
 
 Library has functions for manage key vault secrets.
 
+[i] You can use ':' for nested path, (i.e. `car:props:name`)
+[i] You can prefix your key with '&' for project shared secret, (i.e. `car:props:$name`)
+
 -   **get**: returns secret value.
 
-| Parameters   | Description                                                         |
-| ------------ | ------------------------------------------------------------------- |
-| `key`        | (string) secret key, use ':' for nested path, (i.e. car:props:name) |
-| `serialized` | (boolean) whether value is serialized                               |
+| Parameters   | Description                           |
+| ------------ | ------------------------------------- |
+| `key`        | (string) secret key                   |
+| `serialized` | (boolean) whether value is serialized |
 
 ```javascript
 const value = await keyVault.get('my-secret');
@@ -96,9 +99,9 @@ const value = await keyVault.get('my-secret');
 
 -   **getInfo**: returns secret info.
 
-| Parameters | Description                                                         |
-| ---------- | ------------------------------------------------------------------- |
-| `key`      | (string) secret key, use ':' for nested path, (i.e. car:props:name) |
+| Parameters | Description         |
+| ---------- | ------------------- |
+| `key`      | (string) secret key |
 
 ```javascript
 const info = await keyVault.getInfo('my-secret');
@@ -106,10 +109,10 @@ const info = await keyVault.getInfo('my-secret');
 
 -   **set**: inserts or updates secret value.
 
-| Parameters | Description                                                         |
-| ---------- | ------------------------------------------------------------------- |
-| `key`      | (string) secret key, use ':' for nested path, (i.e. car:props:name) |
-| `value`    | (string) secret key, use ':' for nested path, (i.e. car:props:name) |
+| Parameters | Description         |
+| ---------- | ------------------- |
+| `key`      | (string) secret key |
+| `value`    | (string) secret key |
 
 ```javascript
 const info = await keyVault.set('my-secret', 'my secret value');
@@ -117,9 +120,9 @@ const info = await keyVault.set('my-secret', 'my secret value');
 
 -   **delete**: deletes a secret.
 
-| Parameters | Description                                                         |
-| ---------- | ------------------------------------------------------------------- |
-| `key`      | (string) secret key, use ':' for nested path, (i.e. car:props:name) |
+| Parameters | Description         |
+| ---------- | ------------------- |
+| `key`      | (string) secret key |
 
 ```javascript
 const deletionInfo = await keyVault.delete('my-secret');
@@ -127,9 +130,9 @@ const deletionInfo = await keyVault.delete('my-secret');
 
 -   **purge**: purges a deleted secret.
 
-| Parameters | Description                                                         |
-| ---------- | ------------------------------------------------------------------- |
-| `key`      | (string) secret key, use ':' for nested path, (i.e. car:props:name) |
+| Parameters | Description         |
+| ---------- | ------------------- |
+| `key`      | (string) secret key |
 
 ```javascript
 const info = await keyVault.purge('my-secret');
@@ -137,9 +140,9 @@ const info = await keyVault.purge('my-secret');
 
 -   **restore**: restores a deleted secret.
 
-| Parameters | Description                                                         |
-| ---------- | ------------------------------------------------------------------- |
-| `key`      | (string) secret key, use ':' for nested path, (i.e. car:props:name) |
+| Parameters | Description         |
+| ---------- | ------------------- |
+| `key`      | (string) secret key |
 
 ```javascript
 const restoredInfo = await keyVault.restore('my-secret');
@@ -160,8 +163,15 @@ const listOfSecrets = await keyVault.getAll();
 
 ```javascript
 let secrets = {
+    '$global-var': null,
     'my-secret': null,
     'my-secret-2': 'default value',
+    'my-secret-group1': {
+        'my-secret-3': null
+    },
+    // in case of array type variable, default must be
+    // an array (or empty array) for correct deserialize
+    'my-array-secret': []
 };
 
 const listOfSecrets = await keyVault.getFor(secrets);
@@ -175,8 +185,13 @@ const listOfSecrets = await keyVault.getFor(secrets);
 
 ```javascript
 let secrets = {
+    '$global-var': 'my shared secret',
     'my-secret': 'my secret',
     'my-secret-2': 'my secret 2',
+    'my-secret-group1': {
+        'my-secret-3': 'my secret 3'
+    },
+    'my-array-secret': ['a', 'b', 'c']
 };
 
 const listOfProperties = await keyVault.setAll(secrets);
@@ -184,17 +199,29 @@ const listOfProperties = await keyVault.setAll(secrets);
 
 -   **deleteAll**: deletes every secrets for the project group.
 
+| Parameters   | Description            |
+| ------------ | ---------------------- |
+| `skipGlobal` | skips global variables |
+
 ```javascript
 const info = await keyVault.deleteAll();
 ```
 
 -   **purgeAll**: purges every deleted secrets for the project group.
 
+| Parameters   | Description            |
+| ------------ | ---------------------- |
+| `skipGlobal` | skips global variables |
+
 ```javascript
 const info = await keyVault.purgeAll();
 ```
 
 -   **restoreAll**: restores every deleted secrets for the project group.
+
+| Parameters   | Description            |
+| ------------ | ---------------------- |
+| `skipGlobal` | skips global variables |
 
 ```javascript
 const info = await keyVault.restoreAll();
@@ -288,7 +315,6 @@ foo@bar:~$ npm run akv publish -- \
 Project uses ESLint, for code formatting and code styling normalizing.
 
 -   **eslint**: JavaScript and React linter with Airbnb React base config and some other additions.
--   **prettier**: optional Prettier config.
 
 For correct interpretation of linters, is recommended to use [Visual Studio Code](https://code.visualstudio.com/) as IDE and install the plugins in .vscode folder at 'extensions.json', as well as use the config provided in 'settings.json'
 
