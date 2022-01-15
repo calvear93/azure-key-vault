@@ -55,6 +55,7 @@ export default class AzureKeyVault
         this.env = env;
         // calculates secret name prefix for project group
         this.prefix = `${project}${group ? `-${group}` : ''}${env ? `-${env}` : ''}`;
+        this.prefixGlobal = `${project}${env ? `-${env}` : ''}`;
         this.client = new SecretClient(process.env.AZURE_KEY_VAULT_URI ?? '', new DefaultAzureCredential());
     }
 
@@ -66,7 +67,12 @@ export default class AzureKeyVault
      */
     secretName(key)
     {
-        return `${this.prefix}-${key}`
+        const global = key[0] === '$';
+
+        if (global)
+            key = key.substring(1);
+
+        return `${global ? this.prefixGlobal : this.prefix}-${key}`
             .replace(/[_ ]+/g, '-')
             .replace(/:/g, '--')
             .toLowerCase();
