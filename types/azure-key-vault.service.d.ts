@@ -25,6 +25,14 @@ export declare class AzureKeyVault
     private prefix: string;
 
     /**
+     * Shared secret prefix.
+     *
+     * @private
+     * @type {string}
+     */
+    private prefixShared: string;
+
+    /**
      * Project name.
      *
      * @private
@@ -69,9 +77,11 @@ export declare class AzureKeyVault
      * Retrieves secret name for current project group.
      *
      * @param {string} key secret key
+     * @param {boolean} [isShared] project shared secret (prefixed with $)
+     *
      * @returns {string} secret name
      */
-    public secretName(key: string): string;
+    public secretName(key: string, isShared: boolean): string;
 
     /**
      * Retrieves a secret.
@@ -198,21 +208,27 @@ export declare class AzureKeyVault
     /**
      * Deletes every secrets for the project group.
      *
+     * @param {boolean} [skipShared] skips shared vars
+     *
      * @returns {Promise<void>}
      */
-    public deleteAll(): Promise<void>
+    public deleteAll(skipShared: boolean): Promise<void>
 
     /**
      * Purges every deleted secrets for the project group.
      *
+     * @param {boolean} [skipShared] skips shared vars
+     *
      * @returns {Promise<void>}
      */
-    public purgeAll(): Promise<void>
+    public purgeAll(skipShared: boolean): Promise<void>
 
     /**
      * Restores every deleted secrets for the project group.
      *
+     * @param {boolean} [skipShared] skips shared vars
+     *
      * @returns {Promise<void>}
      */
-    public restoreAll(): Promise<void>
+    public restoreAll(skipShared: boolean): Promise<void>
 }

@@ -10,6 +10,7 @@ export interface AzureKeyVaultConfig
     project: string,
     group?: string,
     env?: string
+    sharedGroup?: string
 }
 
 /**

@@ -148,8 +148,8 @@ export default class AzureKeyVault
     set(key, value)
     {
         // extracts name and member path in case of nested prop.
-        const sections = key.split(':');
-        const path = sections.slice(0, -1).join(':') ?? '';
+        const sections = key.split(/:|--/);
+        const path = sections.slice(0, -1).join('--');
         const name = sections.at(-1);
 
         const isShared = name[0] === '$';
@@ -277,12 +277,12 @@ export default class AzureKeyVault
         {
             const { project, env, group, name, path, serialized } = tags ?? {};
 
-            const key = (path ? `${path}:` : '') + name;
+            const key = (path ? `${path}--` : '') + name;
             const isShared = group === this.sharedGroup;
             const isSerialized = !!+serialized;
 
             if (project === this.project && env === this.env && (isShared || group === this.group))
-                secrets[name] = await this.get(key, isSerialized);
+                secrets[key] = await this.get(key, isSerialized);
         }
 
         return deflatten(secrets);
@@ -363,7 +363,7 @@ export default class AzureKeyVault
     /**
      * Deletes every secrets for the project group.
      *
-     * @param {boolean} skipShared skips shared vars
+     * @param {boolean} [skipShared] skips shared vars
      *
      * @returns {Promise<void>}
      */
@@ -384,7 +384,7 @@ export default class AzureKeyVault
     /**
      * Purges every deleted secrets for the project group.
      *
-     * @param {boolean} skipShared skips shared vars
+     * @param {boolean} [skipShared] skips shared vars
      *
      * @returns {Promise<void>}
      */
@@ -405,7 +405,7 @@ export default class AzureKeyVault
     /**
      * Restores every deleted secrets for the project group.
      *
-     * @param {boolean} skipShared skips shared vars
+     * @param {boolean} [skipShared] skips shared vars
      *
      * @returns {Promise<void>}
      */

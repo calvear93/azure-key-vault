@@ -2,9 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.1] - 2022-01-15
+
+-   fix nested shared variables
+
 ## [2.1.0] - 2022-01-15
 
--   project shared (global) variables support prefixing $
+-   project shared (global) variables support prefixing \$
 -   deps updated
 
 ## [2.0.1] - 2021-11-05
