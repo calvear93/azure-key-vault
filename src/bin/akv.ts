@@ -33,7 +33,10 @@ const CURRENT_DIR = process.cwd();
                 if (!output) throw new Error('"output" param is required');
 
                 // reads secrets definition file
-                const input = await import(path.resolve(CURRENT_DIR, file));
+                const { default: input } = await import(
+                    path.resolve(CURRENT_DIR, file)
+                );
+
                 const secrets = await keyVault.getFor(input, override);
 
                 // saves output file with secrets
@@ -64,7 +67,10 @@ const CURRENT_DIR = process.cwd();
                 if (!file) throw new Error('"file" param is required');
 
                 // updates key vault secrets
-                const secrets = await import(path.resolve(CURRENT_DIR, file));
+                const { default: secrets } = await import(
+                    path.resolve(CURRENT_DIR, file)
+                );
+
                 await keyVault.setAll(secrets);
             }
             break;

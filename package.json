@@ -22,9 +22,7 @@
     "scripts": {
         "build": "tsc",
         "upload": "npm run build && npm login && cd dist && npm publish --access public",
-        "upload:beta": "npm run build && npm login && cd dist && npm publish --access public --tag beta",
-        "upload:alpha": "npm run build && npm login && cd dist && npm publish --access public --tag alpha",
-        "lint:analyze": "eslint --ext .js,.jsx,.ts,.tsx src/",
+        "lint": "eslint --ext .js,.jsx,.ts,.tsx src/",
         "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx src/",
         "test": "test --watchAll=false --verbose",
         "prebuild": "rimraf dist/**",

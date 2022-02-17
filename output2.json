@@ -1,0 +1,31 @@
+{
+    "E1": "1",
+    "E2": "1",
+    "E3": [
+        "1",
+        "2",
+        3
+    ],
+    "::::::": {
+        "$:::::": {
+            "": null
+        }
+    },
+    "NESTED": {
+        "NESTED2": {
+            "NESTED3": {
+                "NORMAL": "test3",
+                "$GLOBAL": "gb3"
+            },
+            "NORMAL": "test2",
+            "$GLOBAL": "gb2"
+        },
+        "NORMAL": "test1",
+        "V1": "1",
+        "V2": "2",
+        "$GLOBAL": "gb1"
+    },
+    "VAE2": "1",
+    "VAR1": "2",
+    "$GLOBAL_DEMO": "gb"
+}

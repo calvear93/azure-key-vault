@@ -2,7 +2,7 @@ import {
     AzureKeyVaultSecrets,
     SecretKey,
     SecretValue
-} from 'models/secrets.interface';
+} from './models/secrets.interface';
 
 /**
  * Flatten a object keeping depth path

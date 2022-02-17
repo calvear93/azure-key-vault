@@ -20,12 +20,12 @@ import {
 import {
     AzureKeyVaultConfig,
     AzureKeyVaultCredentials
-} from 'models/config.interface';
+} from './models/config.interface';
 import {
     AzureKeyVaultSecrets,
     SecretKey,
     SecretValue
-} from 'models/secrets.interface';
+} from './models/secrets.interface';
 
 /**
  * Azure Key Vault handler.
