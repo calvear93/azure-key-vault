@@ -1,4 +1,4 @@
-import parseParams from 'minimist';
+import parseParams, { ParsedArgs } from 'minimist';
 
 /**
  * Retrieves a dictionary with
@@ -20,14 +20,13 @@ import parseParams from 'minimist';
  *  const name = args['e']; // 'json'
  *  const options = args.options; // ['override']
  *
- * @returns {any} command line parameters.
+ * @returns {ParsedArgs} command line parameters
  */
-export function getArgs()
-{
+export function getArgs(): ParsedArgs {
     // get command arguments
     const args = parseParams(process.argv.slice(2));
     // extracts cmd and options from args
-    const [ cmd, ...options ] = args._;
+    const [cmd, ...options] = args._;
 
     args.cmd = cmd?.toLowerCase();
     args.options = options;

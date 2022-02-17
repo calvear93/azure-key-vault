@@ -2,39 +2,38 @@
 import fs from 'fs';
 import path from 'path';
 import { getArgs } from './cmd.util';
-import AzureKeyVault from '../azure-key-vault.service';
+import { AzureKeyVault } from '../azure-key-vault.service';
 
 const CURRENT_DIR = process.cwd();
 
-(async () =>
-{
+(async () => {
     const args = getArgs();
 
     const { project, group, env, uri, spn, password, tenant } = args;
 
     // initializes key vault handler
-    const keyVault = new AzureKeyVault({ project, group, env }, {
-        keyVaultUri: uri,
-        clientId: spn,
-        clientSecret: password,
-        tenantId: tenant
-    });
+    const keyVault = new AzureKeyVault(
+        { project, group, env },
+        {
+            keyVaultUri: uri,
+            clientId: spn,
+            clientSecret: password,
+            tenantId: tenant
+        }
+    );
 
     // command reducer
-    switch (args.cmd)
-    {
+    switch (args.cmd) {
         case 'getfor':
             {
                 const { file, output, override } = args;
 
-                if (!file)
-                    throw new Error('"file" param is required');
+                if (!file) throw new Error('"file" param is required');
 
-                if (!output)
-                    throw new Error('"output" param is required');
+                if (!output) throw new Error('"output" param is required');
 
                 // reads secrets definition file
-                const input = require(path.resolve(CURRENT_DIR, file));
+                const input = await import(path.resolve(CURRENT_DIR, file));
                 const secrets = await keyVault.getFor(input, override);
 
                 // saves output file with secrets
@@ -47,8 +46,7 @@ const CURRENT_DIR = process.cwd();
             {
                 const { output } = args;
 
-                if (!output)
-                    throw new Error('"output" param is required');
+                if (!output) throw new Error('"output" param is required');
 
                 // gets all secrets
                 const secrets = await keyVault.getAll();
@@ -63,11 +61,10 @@ const CURRENT_DIR = process.cwd();
             {
                 const { file } = args;
 
-                if (!file)
-                    throw new Error('"file" param is required');
+                if (!file) throw new Error('"file" param is required');
 
                 // updates key vault secrets
-                const secrets = require(path.resolve(CURRENT_DIR, file));
+                const secrets = await import(path.resolve(CURRENT_DIR, file));
                 await keyVault.setAll(secrets);
             }
             break;

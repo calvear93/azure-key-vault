@@ -1,54 +1,61 @@
 {
-  "version": "2.1.1",
-  "name": "@calvear/azure-key-vault",
-  "title": "Azure Key Vault handler",
-  "description": "Azure Key Vault handler, abstracts secrets management by project, environment and group when vault is shared.",
-  "author": "Alvear Candia, Cristopher Alejandro <calvear93@gmail.com>",
-  "license": "MIT",
-  "private": false,
-  "repository": "https://github.com/calvear93/azure-key-vault",
-  "main": "dist/index.js",
-  "files": [
-    "dist",
-    "types"
-  ],
-  "bin": {
-    "akv": "dist/bin/akv.js"
-  },
-  "types": "types/index.d.ts",
-  "keywords": [
-    "azure",
-    "key-vault",
-    "secrets"
-  ],
-  "engines": {
-    "node": ">=12",
-    "npm": ">=6"
-  },
-  "dependencies": {
-    "@azure/identity": "^2.0.3",
-    "@azure/keyvault-secrets": "^4.3.0",
-    "minimist": "^1.2.5"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.17.3",
-    "@babel/eslint-parser": "^7.17.0",
-    "@babel/preset-env": "^7.16.11",
-    "eslint": "^8.9.0",
-    "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-jsdoc": "^37.9.2",
-    "eslint-plugin-sonarjs": "^0.11.0"
-  },
-  "scripts": {
-    "build": "npx babel src --out-dir dist --copy-files --source-maps",
-    "upload": "npm run build && npm login && npm publish --access public",
-    "upload:beta": "npm run build && npm login && npm publish --access public --tag beta",
-    "upload:alpha": "npm run build && npm login && npm publish --access public --tag alpha",
-    "eslint:analyze": "eslint --ext .js,.jsx src/",
-    "eslint:fix": "eslint --fix --ext .js,.jsx src/",
-    "_packages:update": "npm update --save/--save-dev",
-    "_packages:force-update": "npx npm-check-updates -u",
-    "_git:case-sensitive": "git config core.ignorecase false",
-    "prebuild": "rimraf dist/**"
-  }
+    "version": "3.0.0",
+    "project": "common",
+    "name": "@calvear/azure-key-vault",
+    "title": "Azure Key Vault handler library",
+    "description": "Wrapper for @azure/keyvault-secrets for ease secrets handler in JSON files.",
+    "author": "Alvear Candia, Cristopher Alejandro <calvear93@gmail.com>",
+    "license": "MIT",
+    "private": false,
+    "repository": "https://github.com/calvear93/azure-key-vault",
+    "keywords": [
+        "azure",
+        "key-vault",
+        "secrets",
+        "typescript"
+    ],
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "bin": {
+        "akv": "dist/bin/akv.js"
+    },
+    "scripts": {
+        "build": "tsc",
+        "upload": "npm run build && npm login && cd dist && npm publish --access public",
+        "upload:beta": "npm run build && npm login && cd dist && npm publish --access public --tag beta",
+        "upload:alpha": "npm run build && npm login && cd dist && npm publish --access public --tag alpha",
+        "lint:analyze": "eslint --ext .js,.jsx,.ts,.tsx src/",
+        "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx src/",
+        "test": "test --watchAll=false --verbose",
+        "prebuild": "rimraf dist/**",
+        "postbuild": "copyfiles package.json README.md LICENSE.md CHANGELOG.md dist"
+    },
+    "dependencies": {
+        "@azure/identity": "^2.0.3",
+        "@azure/keyvault-secrets": "^4.3.0",
+        "minimist": "^1.2.5"
+    },
+    "devDependencies": {
+        "@types/jest": "^27.4.0",
+        "@types/minimist": "^1.2.2",
+        "@types/node": "^17.0.18",
+        "@typescript-eslint/eslint-plugin": "^5.12.0",
+        "@typescript-eslint/parser": "^5.12.0",
+        "copyfiles": "^2.4.1",
+        "eslint": "^8.9.0",
+        "eslint-config-prettier": "^8.3.0",
+        "eslint-plugin-eslint-comments": "^3.2.0",
+        "eslint-plugin-jest": "^26.1.1",
+        "eslint-plugin-jest-formatting": "^3.1.0",
+        "eslint-plugin-prettier": "^4.0.0",
+        "eslint-plugin-promise": "^6.0.0",
+        "eslint-plugin-sonarjs": "^0.11.0",
+        "jest": "^27.5.1",
+        "ts-jest": "^27.1.3",
+        "typescript": "^4.5.5"
+    },
+    "engines": {
+        "node": "~14.0.0 || ^16.13.1",
+        "npm": ">=7.5.6"
+    }
 }
