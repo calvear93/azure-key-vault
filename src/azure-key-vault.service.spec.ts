@@ -163,7 +163,8 @@ describe('Azure Key Vault Service', () => {
         expect(Object.keys(secrets)).toHaveLength(values.length);
     });
 
-    test('setAll must handle nested JSON structures', async () => {
+    test('setAll must handle nested JSON structures and getAll/getFor must return it', async () => {
+        const defVal = 'defaultValue';
         const secrets: SecretValue = {
             var1: 'var1',
             $global_var2: 'var2',
@@ -175,8 +176,20 @@ describe('Azure Key Vault Service', () => {
         };
 
         await service.setAll(secrets);
-        const result = await service.getAll();
+        const all = await service.getAll();
+        const only = await service.getFor({
+            var1: null,
+            $global_var2: null,
+            group1: {
+                var3: null,
+                $global_var4: null
+            },
+            arr: null,
+            otherProp: defVal
+        });
 
-        expect(result).toMatchObject(secrets);
+        expect(all).toMatchObject(secrets);
+        expect(only).toMatchObject(secrets);
+        expect(only.otherProp).toBe(defVal);
     });
 });

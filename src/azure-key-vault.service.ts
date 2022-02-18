@@ -331,7 +331,7 @@ export class AzureKeyVault {
             const { project, env, group, name, path } = tags ?? {};
 
             const key = (path ? `${path}--` : '') + name;
-            const isShared = name[0] === '$';
+            const isShared = name?.[0] === '$';
 
             if (
                 project === this.project &&
@@ -420,7 +420,7 @@ export class AzureKeyVault {
             const { project, env, group, name, path } = tags ?? {};
 
             const key = (path ? `${path}:` : '') + name;
-            const isShared = name[0] === '$';
+            const isShared = name?.[0] === '$';
 
             if (skipShared && isShared) continue;
 
@@ -447,7 +447,7 @@ export class AzureKeyVault {
             const { project, env, group, name, path } = tags ?? {};
 
             const key = (path ? `${path}:` : '') + name;
-            const isShared = name[0] === '$';
+            const isShared = name?.[0] === '$';
 
             if (skipShared && isShared) continue;
 
@@ -474,7 +474,7 @@ export class AzureKeyVault {
             const { project, env, group, name, path } = tags ?? {};
 
             const key = (path ? `${path}:` : '') + name;
-            const isShared = name[0] === '$';
+            const isShared = name?.[0] === '$';
 
             if (skipShared && isShared) continue;
 
