@@ -27,11 +27,6 @@ import {
 // represents azure key vault stores server
 const GLOBAL_STORE: Record<string, Record<string, KeyVaultSecret>> = {};
 
-// clears specific key vault store
-export const clearStore = (vaultUrl: string) => {
-    delete GLOBAL_STORE[vaultUrl];
-};
-
 export class AkvClientMock implements SecretClient {
     vaultUrl: string;
 

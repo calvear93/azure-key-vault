@@ -1,6 +1,6 @@
 import { AzureKeyVault } from 'azure-key-vault.service';
 import { AzureKeyVaultConfig, SecretValue } from 'index';
-import { AkvClientMock, clearStore } from '__mocks__/akv-client.mock';
+import { AkvClientMock } from '__mocks__/akv-client.mock';
 
 describe('Azure Key Vault Service', () => {
     // SECTION: Init
@@ -19,10 +19,6 @@ describe('Azure Key Vault Service', () => {
     // SECTION: Events
     beforeAll(() => {
         service = new AzureKeyVault(config, undefined, akvClient);
-    });
-
-    afterAll(() => {
-        clearStore(akvClient.vaultUrl);
     });
 
     // SECTION: Tests
@@ -134,12 +130,53 @@ describe('Azure Key Vault Service', () => {
         expect(nonGlobalValueFromService2).not.toBe(nonGlobalValue);
     });
 
-    test('a', async () => {
-        const secret = await service.getAll();
+    test('getAll should returns all and only created secrets for project', async () => {
+        const values = [
+            { key: 'k1', value: 'v1' },
+            { key: 'k2', value: 18 },
+            { key: 'k3', value: true }
+        ];
 
-        for await (const { tags } of akvClient.listPropertiesOfSecrets())
-            console.log(tags);
+        const localService = new AzureKeyVault(
+            {
+                ...config,
+                project: 'test-local-project'
+            },
+            undefined,
+            akvClient
+        );
 
-        expect(1).toBe(1);
+        await Promise.all(
+            values.map((secret) => localService.set(secret.key, secret.value))
+        );
+
+        const secrets = await localService.getAll();
+
+        // all setted value must be in store
+        values.forEach(async (secret) => {
+            const value = await localService.get(secret.key);
+
+            expect(secrets[secret.key]).toBe(value);
+        });
+
+        // all secrets count must be same that setted
+        expect(Object.keys(secrets)).toHaveLength(values.length);
+    });
+
+    test('setAll must handle nested JSON structures', async () => {
+        const secrets: SecretValue = {
+            var1: 'var1',
+            $global_var2: 'var2',
+            group1: {
+                var3: 'var3',
+                $global_var4: 'var4'
+            },
+            arr: ['1', 2, '3']
+        };
+
+        await service.setAll(secrets);
+        const result = await service.getAll();
+
+        expect(result).toMatchObject(secrets);
     });
 });
