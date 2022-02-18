@@ -165,7 +165,7 @@ describe('Azure Key Vault Service', () => {
 
     test('setAll must handle nested JSON structures and getAll/getFor must return it', async () => {
         const defVal = 'defaultValue';
-        const secrets: SecretValue = {
+        const secrets = {
             var1: 'var1',
             $global_var2: 'var2',
             group1: {

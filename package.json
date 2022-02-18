@@ -1,5 +1,5 @@
 {
-    "version": "3.0.0",
+    "version": "3.0.1",
     "project": "common",
     "name": "@calvear/azure-key-vault",
     "title": "Azure Key Vault handler library",

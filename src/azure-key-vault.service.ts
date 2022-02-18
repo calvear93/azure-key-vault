@@ -324,7 +324,7 @@ export class AzureKeyVault {
      *
      * @returns {Promise<Array<any>>} project group secrets list
      */
-    async getAll(): Promise<AzureKeyVaultSecrets> {
+    async getAll<T extends AzureKeyVaultSecrets>(): Promise<T> {
         const secrets: AzureKeyVaultSecrets = {};
 
         for await (const { tags } of this.client.listPropertiesOfSecrets()) {
@@ -341,7 +341,7 @@ export class AzureKeyVault {
                 secrets[key] = await this.get(key);
         }
 
-        return deflatten(secrets);
+        return deflatten(secrets) as T;
     }
 
     /**
@@ -358,10 +358,10 @@ export class AzureKeyVault {
      *
      * @returns {Promise<AzureKeyVaultSecrets>} project group secrets list
      */
-    async getFor(
+    async getFor<T extends AzureKeyVaultSecrets>(
         secrets: AzureKeyVaultSecrets,
         override = false
-    ): Promise<AzureKeyVaultSecrets> {
+    ): Promise<T> {
         const promises: Record<SecretKey, Promise<SecretValue>> = {};
 
         // multi level nested json support.
@@ -386,7 +386,7 @@ export class AzureKeyVault {
             }
         }
 
-        return deflatten(secrets);
+        return deflatten(secrets) as T;
     }
 
     /**
