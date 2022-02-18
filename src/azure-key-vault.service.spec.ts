@@ -134,10 +134,12 @@ describe('Azure Key Vault Service', () => {
         expect(nonGlobalValueFromService2).not.toBe(nonGlobalValue);
     });
 
-    // test('a', async () => {
-    //     await service.set('$k1', 'v1');
-    //     const secret = await service.getAll();
+    test('a', async () => {
+        const secret = await service.getAll();
 
-    //     expect(1).toBe(1);
-    // });
+        for await (const { tags } of akvClient.listPropertiesOfSecrets())
+            console.log(tags);
+
+        expect(1).toBe(1);
+    });
 });

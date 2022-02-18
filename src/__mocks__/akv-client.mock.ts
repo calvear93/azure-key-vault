@@ -35,9 +35,9 @@ export const clearStore = (vaultUrl: string) => {
 export class AkvClientMock implements SecretClient {
     vaultUrl: string;
 
-    private readonly secrets: Record<string, KeyVaultSecret>;
+    secrets: Record<string, KeyVaultSecret>;
 
-    *[Symbol.asyncIterator]() {
+    async *[Symbol.asyncIterator]() {
         const secrets = Object.values(this.secrets);
 
         for (const secret of secrets) yield Promise.resolve(secret);
@@ -173,7 +173,17 @@ export class AkvClientMock implements SecretClient {
         SecretProperties[],
         PageSettings
     > {
-        return this[Symbol.asyncIterator] as any;
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const container = this;
+
+        return {
+            async *[Symbol.asyncIterator]() {
+                const secrets = Object.values(container.secrets);
+
+                for (const { properties } of secrets)
+                    yield Promise.resolve(properties);
+            }
+        } as any;
     }
 
     listDeletedSecrets(
