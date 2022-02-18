@@ -80,14 +80,6 @@ export class AzureKeyVault {
     private env?: string;
 
     /**
-     * Secrets shared group.
-     *
-     * @private
-     * @type {string}
-     */
-    private sharedGroup?: string;
-
-    /**
      * Validates emptiness of an object.
      *
      * @constructor
@@ -110,12 +102,11 @@ export class AzureKeyVault {
             process.env.AZURE_TENANT_ID = tenantId;
         }
 
-        const { project, group, env, sharedGroup = 'SHARED' } = config;
+        const { project, group, env } = config;
 
         this.project = project;
         this.group = group;
         this.env = env;
-        this.sharedGroup = sharedGroup; // for project shared variables
 
         const nsEnv = env ? `-${env}` : '';
         const nsGroup = group ? `-${group}` : '';
@@ -234,7 +225,7 @@ export class AzureKeyVault {
                     path,
                     env: this.env ?? '',
                     project: this.project,
-                    group: (isShared ? this.sharedGroup : this.group) ?? '',
+                    group: isShared || !this.group ? '' : this.group,
                     serialized: shouldBeSerialized ? '1' : '0'
                 }
             }
@@ -340,7 +331,7 @@ export class AzureKeyVault {
             const { project, env, group, name, path } = tags ?? {};
 
             const key = (path ? `${path}--` : '') + name;
-            const isShared = group === this.sharedGroup;
+            const isShared = name[0] === '$';
 
             if (
                 project === this.project &&
@@ -429,7 +420,9 @@ export class AzureKeyVault {
             const { project, env, group, name, path } = tags ?? {};
 
             const key = (path ? `${path}:` : '') + name;
-            const isShared = !skipShared && group === this.sharedGroup;
+            const isShared = name[0] === '$';
+
+            if (skipShared && isShared) continue;
 
             if (
                 project === this.project &&
@@ -454,7 +447,9 @@ export class AzureKeyVault {
             const { project, env, group, name, path } = tags ?? {};
 
             const key = (path ? `${path}:` : '') + name;
-            const isShared = !skipShared && group === this.sharedGroup;
+            const isShared = name[0] === '$';
+
+            if (skipShared && isShared) continue;
 
             if (
                 project === this.project &&
@@ -479,7 +474,9 @@ export class AzureKeyVault {
             const { project, env, group, name, path } = tags ?? {};
 
             const key = (path ? `${path}:` : '') + name;
-            const isShared = !skipShared && group === this.sharedGroup;
+            const isShared = name[0] === '$';
+
+            if (skipShared && isShared) continue;
 
             if (
                 project === this.project &&

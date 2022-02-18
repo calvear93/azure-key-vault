@@ -3,22 +3,20 @@ import { AzureKeyVaultConfig, SecretValue } from 'index';
 import { AkvClientMock, clearStore } from '__mocks__/akv-client.mock';
 
 describe('Azure Key Vault Service', () => {
-    // [INIT]
-
+    // SECTION: Init
     let service: AzureKeyVault;
     // common key value pair for test
     const [secretKey, secretValue] = ['key', 'value'];
     // namespace config
     const config: AzureKeyVaultConfig = {
         project: 'test-project',
-        group: 'test-group',
+        group: 'test-group2',
         env: 'test'
     };
     // mocked azure key vault client
     const akvClient = new AkvClientMock();
 
-    // [EVENTS]
-
+    // SECTION: Events
     beforeAll(() => {
         service = new AzureKeyVault(config, undefined, akvClient);
     });
@@ -27,8 +25,7 @@ describe('Azure Key Vault Service', () => {
         clearStore(akvClient.vaultUrl);
     });
 
-    // [TESTS]
-
+    // SECTION: Tests
     test('setted secret name must be prefixed by project-group-env', async () => {
         const expectedName = `${config.project}-${config.group}-${config.env}-${secretKey}`;
 
@@ -136,4 +133,11 @@ describe('Azure Key Vault Service', () => {
         expect(nonGlobalValueFromService1).toBe(nonGlobalValue);
         expect(nonGlobalValueFromService2).not.toBe(nonGlobalValue);
     });
+
+    // test('a', async () => {
+    //     await service.set('$k1', 'v1');
+    //     const secret = await service.getAll();
+
+    //     expect(1).toBe(1);
+    // });
 });
