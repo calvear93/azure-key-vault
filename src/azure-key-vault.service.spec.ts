@@ -3,37 +3,31 @@ import { AzureKeyVaultConfig, SecretValue } from 'index';
 import { AkvClientMock, clearStore } from '__mocks__/akv-client.mock';
 
 describe('Azure Key Vault Service', () => {
-    let service: AzureKeyVault;
+    // [INIT]
 
+    let service: AzureKeyVault;
     // common key value pair for test
     const [secretKey, secretValue] = ['key', 'value'];
-
+    // namespace config
     const config: AzureKeyVaultConfig = {
         project: 'test-project',
         group: 'test-group',
         env: 'test'
     };
-
     // mocked azure key vault client
     const akvClient = new AkvClientMock();
 
+    // [EVENTS]
+
     beforeAll(() => {
-        service = new AzureKeyVault(
-            config,
-            // {
-            //     keyVaultUri: 'https://kv-qa-ittec-sti.vault.azure.net',
-            //     clientId: '4beb8852-aba3-4ee8-9bdb-32876e1bc632',
-            //     clientSecret: 'qNRjd.~Yf2Pz2D2-0Jq6--DxS31MPCn5l9',
-            //     tenantId: '6d4bbe0a-5654-4c69-a682-bf7dcdaed8e7'
-            // },
-            undefined,
-            akvClient
-        );
+        service = new AzureKeyVault(config, undefined, akvClient);
     });
 
     afterAll(() => {
         clearStore(akvClient.vaultUrl);
     });
+
+    // [TESTS]
 
     test('setted secret name must be prefixed by project-group-env', async () => {
         const expectedName = `${config.project}-${config.group}-${config.env}-${secretKey}`;
@@ -130,14 +124,16 @@ describe('Azure Key Vault Service', () => {
         const globalValueFromService1 = await service1.get(globalKey);
         const globalValueFromService2 = await service2.get(globalKey);
 
+        // global secret is shared across groups
         expect(globalValueFromService1).toBe(globalValue);
         expect(globalValueFromService2).toBe(globalValue);
 
         await service1.set(nonGlobalKey, nonGlobalValue);
-        const nonGobalValueFromService1 = await service1.get(nonGlobalKey);
-        const nonGobalValueFromService2 = await service2.get(nonGlobalKey);
+        const nonGlobalValueFromService1 = await service1.get(nonGlobalKey);
+        const nonGlobalValueFromService2 = await service2.get(nonGlobalKey);
 
-        expect(nonGobalValueFromService1).toBe(nonGlobalValue);
-        expect(nonGobalValueFromService2).not.toBe(nonGlobalValue);
+        // not global secret must not be shared
+        expect(nonGlobalValueFromService1).toBe(nonGlobalValue);
+        expect(nonGlobalValueFromService2).not.toBe(nonGlobalValue);
     });
 });
