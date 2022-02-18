@@ -27,10 +27,18 @@ import {
 // represents azure key vault stores server
 const GLOBAL_STORE: Record<string, Record<string, KeyVaultSecret>> = {};
 
+const BACKUP_PREFIX = '___backup___';
+
+const DELETED_PREFIX = '___deleted___';
+
 export class AkvClientMock implements SecretClient {
     vaultUrl: string;
 
     secrets: Record<string, KeyVaultSecret>;
+
+    private readonly encoder: TextEncoder;
+
+    private readonly decoder: TextDecoder;
 
     async *[Symbol.asyncIterator]() {
         const secrets = Object.values(this.secrets);
@@ -42,6 +50,9 @@ export class AkvClientMock implements SecretClient {
         this.vaultUrl = vaultUrl ?? 'localhost';
         GLOBAL_STORE[this.vaultUrl] = GLOBAL_STORE[this.vaultUrl] ?? {};
         this.secrets = GLOBAL_STORE[this.vaultUrl];
+        // backup utils
+        this.encoder = new TextEncoder();
+        this.decoder = new TextDecoder();
     }
 
     setSecret(
@@ -73,11 +84,13 @@ export class AkvClientMock implements SecretClient {
     ): Promise<PollerLike<PollOperationState<DeletedSecret>, DeletedSecret>> {
         if (!this.secrets[name]) throw new Error('Secret does not exists');
 
-        const deleted = this.secrets[name] as DeletedSecret;
+        const deletedName = `${DELETED_PREFIX}${name}`;
+
+        this.secrets[deletedName] = this.secrets[name];
         delete this.secrets[name];
 
         return Promise.resolve({
-            pollUntilDone: () => Promise.resolve(deleted)
+            pollUntilDone: () => Promise.resolve(this.secrets[deletedName])
         } as any);
     }
 
@@ -86,6 +99,9 @@ export class AkvClientMock implements SecretClient {
         secretVersion: string,
         { enabled, expiresOn, tags }: UpdateSecretPropertiesOptions
     ): Promise<SecretProperties> {
+        if (!this.secrets[secretName])
+            throw new Error('Secret does not exists');
+
         const secret = this.secrets[secretName];
 
         this.secrets[secretName] = {
@@ -117,14 +133,26 @@ export class AkvClientMock implements SecretClient {
         secretName: string,
         options?: GetDeletedSecretOptions
     ): Promise<DeletedSecret> {
-        throw new Error('Method not implemented.');
+        const deletedName = `${DELETED_PREFIX}${secretName}`;
+
+        if (!this.secrets[deletedName])
+            throw new Error('Secret does not exists');
+
+        return Promise.resolve(this.secrets[deletedName]);
     }
 
     purgeDeletedSecret(
         secretName: string,
         options?: PurgeDeletedSecretOptions
     ): Promise<void> {
-        throw new Error('Method not implemented.');
+        const deletedName = `${DELETED_PREFIX}${secretName}`;
+
+        if (!this.secrets[deletedName])
+            throw new Error('Deleted secret does not exists');
+
+        delete this.secrets[deletedName];
+
+        return Promise.resolve();
     }
 
     beginRecoverDeletedSecret(
@@ -133,32 +161,40 @@ export class AkvClientMock implements SecretClient {
     ): Promise<
         PollerLike<PollOperationState<SecretProperties>, SecretProperties>
     > {
-        throw new Error('Method not implemented.');
+        const deletedName = `${DELETED_PREFIX}${name}`;
+
+        if (this.secrets[name] || !this.secrets[deletedName])
+            throw new Error('Secret is not deleted');
+
+        this.secrets[name] = this.secrets[deletedName];
+        delete this.secrets[deletedName];
+
+        return Promise.resolve({
+            pollUntilDone: () => Promise.resolve(this.secrets[name])
+        } as any);
     }
 
     backupSecret(
         secretName: string,
         options?: BackupSecretOptions
     ): Promise<Uint8Array | undefined> {
-        throw new Error('Method not implemented.');
+        const backupName = `${BACKUP_PREFIX}${secretName}`;
+
+        this.secrets[backupName] = this.secrets[secretName];
+
+        return Promise.resolve(this.encoder.encode(backupName));
     }
 
     restoreSecretBackup(
         secretBundleBackup: Uint8Array,
         options?: RestoreSecretBackupOptions
     ): Promise<SecretProperties> {
-        throw new Error('Method not implemented.');
-    }
+        const backupName = this.decoder.decode(secretBundleBackup);
+        const key = backupName.replace(BACKUP_PREFIX, '');
 
-    listPropertiesOfSecretVersions(
-        secretName: string,
-        options?: ListPropertiesOfSecretVersionsOptions
-    ): PagedAsyncIterableIterator<
-        SecretProperties,
-        SecretProperties[],
-        PageSettings
-    > {
-        throw new Error('Method not implemented.');
+        this.secrets[key] = this.secrets[backupName];
+
+        return Promise.resolve(this.secrets[key].properties);
     }
 
     listPropertiesOfSecrets(
@@ -186,6 +222,29 @@ export class AkvClientMock implements SecretClient {
     ): PagedAsyncIterableIterator<
         DeletedSecret,
         DeletedSecret[],
+        PageSettings
+    > {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const container = this;
+
+        return {
+            async *[Symbol.asyncIterator]() {
+                const keys = Object.keys(container.secrets);
+
+                for (const key of keys) {
+                    if (key.startsWith(DELETED_PREFIX))
+                        yield Promise.resolve(container.secrets[key]);
+                }
+            }
+        } as any;
+    }
+
+    listPropertiesOfSecretVersions(
+        secretName: string,
+        options?: ListPropertiesOfSecretVersionsOptions
+    ): PagedAsyncIterableIterator<
+        SecretProperties,
+        SecretProperties[],
         PageSettings
     > {
         throw new Error('Method not implemented.');

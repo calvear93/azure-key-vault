@@ -192,4 +192,36 @@ describe('Azure Key Vault Service', () => {
         expect(only).toMatchObject(secrets);
         expect(only.otherProp).toBe(defVal);
     });
+
+    test('deleted secret must not be returned by get', async () => {
+        await service.set(secretKey, secretValue);
+        await service.delete(secretKey);
+
+        const secret = await service.get(secretKey);
+
+        expect(secret).toBeNull();
+    });
+
+    test('deleted secret can be restored', async () => {
+        await service.set(secretKey, secretValue);
+        await service.delete(secretKey);
+        await service.restore(secretKey);
+
+        const secret = await service.get(secretKey);
+
+        expect(secret).toBeDefined();
+        expect(secret).toBe(secretValue);
+    });
+
+    test('purged secret can not be restored', async () => {
+        await service.set(secretKey, secretValue);
+        await service.delete(secretKey);
+        await service.purge(secretKey);
+
+        await service.restore(secretKey);
+
+        const secret = await service.get(secretKey);
+
+        expect(secret).toBeNull();
+    });
 });
