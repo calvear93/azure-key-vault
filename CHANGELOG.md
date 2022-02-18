@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [3.0.0] - 2022-02-17
+## [3.0.0] - 2022-02-18
 
 -   migration to TypeScript
 -   updated dependencies
