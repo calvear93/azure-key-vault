@@ -1,10 +1,11 @@
 import { AzureKeyVault } from 'azure-key-vault.service';
 import { AzureKeyVaultConfig, SecretValue } from 'index';
-import { AkvClientMock } from '__mocks__/akv-client.mock';
+import { AkvClientMock, clearStore } from '__mocks__/akv-client.mock';
 
 describe('Azure Key Vault Service', () => {
     let service: AzureKeyVault;
 
+    // common key value pair for test
     const [secretKey, secretValue] = ['key', 'value'];
 
     const config: AzureKeyVaultConfig = {
@@ -13,8 +14,25 @@ describe('Azure Key Vault Service', () => {
         env: 'test'
     };
 
-    beforeEach(() => {
-        service = new AzureKeyVault(config, undefined, new AkvClientMock());
+    // mocked azure key vault client
+    const akvClient = new AkvClientMock();
+
+    beforeAll(() => {
+        service = new AzureKeyVault(
+            config,
+            // {
+            //     keyVaultUri: 'https://kv-qa-ittec-sti.vault.azure.net',
+            //     clientId: '4beb8852-aba3-4ee8-9bdb-32876e1bc632',
+            //     clientSecret: 'qNRjd.~Yf2Pz2D2-0Jq6--DxS31MPCn5l9',
+            //     tenantId: '6d4bbe0a-5654-4c69-a682-bf7dcdaed8e7'
+            // },
+            undefined,
+            akvClient
+        );
+    });
+
+    afterAll(() => {
+        clearStore(akvClient.vaultUrl);
     });
 
     test('setted secret name must be prefixed by project-group-env', async () => {
@@ -50,6 +68,15 @@ describe('Azure Key Vault Service', () => {
         expect(value).toBe(secretValue);
     });
 
+    test('string type value of setted secret must not be serialized', async () => {
+        const [strKey, strValue] = ['str', 'anyString'];
+
+        const str = await service.set(strKey, strValue);
+
+        expect(typeof str.value).toBe('string');
+        expect(str.properties.tags?.serialized).toBe('0');
+    });
+
     test('object type value of setted secret must be serialized', async () => {
         const secretObjValue: SecretValue = {
             anyProp: 'anyValue',
@@ -60,16 +87,57 @@ describe('Azure Key Vault Service', () => {
 
         const secret = await service.set(secretKey, secretObjValue);
         const value = await service.get(secretKey);
-        // const value = await service.getInfo(secretKey);
 
+        expect(typeof secret.value).toBe('string');
+        expect(secret.properties.tags?.serialized).toBe('1');
         expect(value).toMatchObject(secretObjValue);
-        // expect(secret.value).toMatchObject(secretObjValue);
     });
 
-    // it('ts', async () => {
-    //     await service.set('hola', 1);
-    //     const a = await service.getInfo('hola');
+    test('array type value of setted secret must be serialized', async () => {
+        const secretArrValue: SecretValue = ['anyValue1', 'anyValue2'];
 
-    //     expect(1).toBe(1);
-    // });
+        const secret = await service.set(secretKey, secretArrValue);
+        const value = await service.get(secretKey);
+
+        expect(typeof secret.value).toBe('string');
+        expect(secret.properties.tags?.serialized).toBe('1');
+        expect(value).toMatchObject(secretArrValue);
+    });
+
+    test('global variables ($) must be shared across groups but not global must not', async () => {
+        const service1 = new AzureKeyVault(
+            {
+                ...config,
+                group: 'test-group-1'
+            },
+            undefined,
+            akvClient
+        );
+
+        const service2 = new AzureKeyVault(
+            {
+                ...config,
+                group: 'test-group-2'
+            },
+            undefined,
+            akvClient
+        );
+
+        const [nonGlobalKey, nonGlobalValue] = ['key', 'value'];
+        const [globalKey, globalValue] = ['$global-key', 'globalValue'];
+
+        await service1.set(globalKey, globalValue);
+        const globalValueFromService1 = await service1.get(globalKey);
+        const globalValueFromService2 = await service2.get(globalKey);
+
+        expect(globalValueFromService1).toBe(globalValue);
+        expect(globalValueFromService2).toBe(globalValue);
+
+        await service1.set(nonGlobalKey, nonGlobalValue);
+        const nonGobalValueFromService1 = await service1.get(nonGlobalKey);
+        const nonGobalValueFromService2 = await service2.get(nonGlobalKey);
+
+        expect(nonGobalValueFromService1).toBe(nonGlobalValue);
+        expect(nonGobalValueFromService2).not.toBe(nonGlobalValue);
+    });
 });

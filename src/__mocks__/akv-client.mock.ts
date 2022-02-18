@@ -24,6 +24,14 @@ import {
     UpdateSecretPropertiesOptions
 } from '@azure/keyvault-secrets';
 
+// represents azure key vault stores server
+const GLOBAL_STORE: Record<string, Record<string, KeyVaultSecret>> = {};
+
+// clears specific key vault store
+export const clearStore = (vaultUrl: string) => {
+    delete GLOBAL_STORE[vaultUrl];
+};
+
 export class AkvClientMock implements SecretClient {
     vaultUrl: string;
 
@@ -35,9 +43,10 @@ export class AkvClientMock implements SecretClient {
         for (const secret of secrets) yield Promise.resolve(secret);
     }
 
-    constructor() {
-        this.vaultUrl = 'localhost';
-        this.secrets = {};
+    constructor(vaultUrl?: string) {
+        this.vaultUrl = vaultUrl ?? 'localhost';
+        GLOBAL_STORE[this.vaultUrl] = GLOBAL_STORE[this.vaultUrl] ?? {};
+        this.secrets = GLOBAL_STORE[this.vaultUrl];
     }
 
     setSecret(

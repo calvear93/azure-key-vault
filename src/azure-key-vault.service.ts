@@ -139,7 +139,7 @@ export class AzureKeyVault {
      *
      * @returns {string} secret name
      */
-    secretName(key: SecretKey, isShared = false): string {
+    private secretName(key: SecretKey, isShared = false): string {
         const prefix = isShared ? this.prefixShared : this.prefix;
 
         return `${prefix}-${key}`
@@ -160,11 +160,10 @@ export class AzureKeyVault {
      *  const globalVar = await keyVault.set('parent:$global_var');
      *
      * @param {string} key secret key
-     * @param {boolean} serialized whether value is serialized
      *
      * @returns {Promise<string | null>} secret value
      */
-    async get(key: SecretKey, serialized = false): Promise<string | null> {
+    async get(key: SecretKey): Promise<string | null> {
         const isShared = key.includes('$');
 
         try {
@@ -338,18 +337,17 @@ export class AzureKeyVault {
         const secrets: AzureKeyVaultSecrets = {};
 
         for await (const { tags } of this.client.listPropertiesOfSecrets()) {
-            const { project, env, group, name, path, serialized } = tags ?? {};
+            const { project, env, group, name, path } = tags ?? {};
 
             const key = (path ? `${path}--` : '') + name;
             const isShared = group === this.sharedGroup;
-            const isSerialized = !!+serialized;
 
             if (
                 project === this.project &&
                 env === this.env &&
                 (isShared || group === this.group)
             )
-                secrets[key] = await this.get(key, isSerialized);
+                secrets[key] = await this.get(key);
         }
 
         return deflatten(secrets);
@@ -381,11 +379,8 @@ export class AzureKeyVault {
         // executes request
         for (const key in secrets) {
             const secret = secrets[key];
-            const isArray = Array.isArray(secret);
 
-            if (override) promises[key] = this.get(key, isArray);
-            else if (!secret || (isArray && secret?.length === 0))
-                promises[key] = this.get(key, Array.isArray(secret));
+            if (override || !secret) promises[key] = this.get(key);
             else promises[key] = Promise.resolve(secret);
         }
 
