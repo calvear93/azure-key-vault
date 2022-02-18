@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.2] - 2022-02-18
+
+-   fix package paths
+
 ## [3.0.1] - 2022-02-18
 
 -   generic in getALl and getFor methods

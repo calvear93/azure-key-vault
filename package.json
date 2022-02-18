@@ -1,5 +1,5 @@
 {
-    "version": "3.0.1",
+    "version": "3.0.2",
     "project": "common",
     "name": "@calvear/azure-key-vault",
     "title": "Azure Key Vault handler library",
@@ -14,10 +14,10 @@
         "secrets",
         "typescript"
     ],
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "main": "index.js",
+    "types": "index.d.ts",
     "bin": {
-        "akv": "dist/bin/akv.js"
+        "akv": "bin/akv.js"
     },
     "scripts": {
         "build": "tsc",
