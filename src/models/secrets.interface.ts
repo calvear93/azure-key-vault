@@ -3,6 +3,7 @@ export type SecretKey = string;
 export type SecretValue =
     | string
     | number
+    | boolean
     | null
     | undefined
     | AzureKeyVaultSecrets

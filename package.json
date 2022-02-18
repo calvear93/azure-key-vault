@@ -24,7 +24,7 @@
         "upload": "npm run build && npm login && cd dist && npm publish --access public",
         "lint": "eslint --ext .js,.jsx,.ts,.tsx src/",
         "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx src/",
-        "test": "test --watchAll=false --verbose",
+        "test": "jest --watchAll=false --verbose",
         "prebuild": "rimraf dist/**",
         "postbuild": "copyfiles package.json README.md LICENSE.md CHANGELOG.md dist"
     },

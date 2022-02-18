@@ -1,0 +1,18 @@
+{
+    "recommendations": [
+        "abhijoybasak.nestjs-files",
+        "adam-bender.commit-message-editor",
+        "alefragnani.bookmarks",
+        "bradgashler.htmltagwrap",
+        "dbaeumer.vscode-eslint",
+        "eamodio.gitlens",
+        "exodiusstudios.comment-anchors",
+        "manuelalabor.rxjs-debugging-for-vs-code",
+        "oouo-diogo-perdigao.docthis",
+        "rbbit.typescript-hero",
+        "svipas.prettier-plus",
+        "tyriar.windows-terminal",
+        "waderyan.gitblame",
+        "yatki.vscode-surround"
+    ]
+}

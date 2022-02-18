@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Test",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "sourceMaps": true,
+            "restart": true,
+            "disableOptimisticBPs": true,
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "test",
+                "${fileBasenameNoExtension}",
+                "-no-cache"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/src/**/*.ts"
+            ],
+            "skipFiles": [
+                "<node_internals>/**/*.js"
+            ],
+            "protocol": "inspector",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        }
+    ]
+}

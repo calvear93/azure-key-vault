@@ -97,7 +97,8 @@ export class AzureKeyVault {
      */
     constructor(
         config: AzureKeyVaultConfig,
-        credentials?: AzureKeyVaultCredentials
+        credentials?: AzureKeyVaultCredentials,
+        client?: SecretClient
     ) {
         if (credentials) {
             const { keyVaultUri, clientId, clientSecret, tenantId } =
@@ -122,10 +123,12 @@ export class AzureKeyVault {
         // calculates secret name prefix for project group
         this.prefix = `${project}${nsGroup}${nsEnv}`;
         this.prefixShared = `${project}${nsEnv}`;
-        this.client = new SecretClient(
-            process.env.AZURE_KEY_VAULT_URI ?? '',
-            new DefaultAzureCredential()
-        );
+        this.client =
+            client ??
+            new SecretClient(
+                process.env.AZURE_KEY_VAULT_URI ?? '',
+                new DefaultAzureCredential()
+            );
     }
 
     /**
@@ -165,11 +168,14 @@ export class AzureKeyVault {
         const isShared = key.includes('$');
 
         try {
-            const { value } = await this.client.getSecret(
-                this.secretName(key, isShared)
-            );
+            const {
+                value,
+                properties: { tags = {} }
+            } = await this.client.getSecret(this.secretName(key, isShared));
 
-            return serialized && value ? JSON.parse(value) : value;
+            const { serialized } = tags;
+
+            return serialized === '1' && value ? JSON.parse(value) : value;
         } catch {
             return null;
         }
