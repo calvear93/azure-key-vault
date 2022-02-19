@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.4] - 2022-02-19
+
+-   build tsconfig added
+
 ## [3.0.2] - 2022-02-18
 
 -   fix package paths

@@ -1,26 +1,21 @@
 {
-    "version": "3.0.3",
+    "version": "3.0.4",
     "project": "common",
     "name": "@calvear/azure-key-vault",
     "title": "Azure Key Vault handler library",
     "description": "Wrapper for @azure/keyvault-secrets for ease secrets handler in JSON files.",
     "author": "Alvear Candia, Cristopher Alejandro <calvear93@gmail.com>",
+    "repository": "https://github.com/calvear93/azure-key-vault",
     "license": "MIT",
     "private": false,
-    "repository": "https://github.com/calvear93/azure-key-vault",
     "keywords": [
         "azure",
         "key-vault",
         "secrets",
         "typescript"
     ],
-    "main": "index.js",
-    "types": "index.d.ts",
-    "bin": {
-        "akv": "bin/akv.js"
-    },
     "scripts": {
-        "build": "tsc",
+        "build": "tsc --p tsconfig.build.json",
         "upload": "npm run build && npm login && cd dist && npm publish --access public",
         "lint": "eslint --ext .js,.jsx,.ts,.tsx src/",
         "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx src/",
@@ -51,6 +46,11 @@
         "jest": "^27.5.1",
         "ts-jest": "^27.1.3",
         "typescript": "^4.5.5"
+    },
+    "main": "index.js",
+    "types": "index.d.ts",
+    "bin": {
+        "akv": "bin/akv.js"
     },
     "engines": {
         "node": "~14.0.0 || ^16.13.1",

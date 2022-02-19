@@ -3,7 +3,7 @@
         "baseUrl": "src",
         "outDir": "dist",
 
-        "target": "es2021",
+        "target": "es2020",
         "module": "commonjs",
         "moduleResolution": "node",
         "resolveJsonModule": true,
@@ -43,6 +43,5 @@
         "useUnknownInCatchVariables": true,
         "exactOptionalPropertyTypes": false
     },
-    "include": ["src/**/*"],
-    "exclude": ["**/*.spec.ts", "**/*.test.ts", "**/__tests__", "**/__mocks__"]
+    "include": ["src/**/*", "**/*.spec.ts", "**/*.test.ts"]
 }
