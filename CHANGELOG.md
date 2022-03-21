@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.5] - 2022-03-21
+
+-   deps updated
+-   fixed tslib error. Disabled importHelpers in tsconfig
+
 ## [3.0.4] - 2022-02-19
 
 -   build tsconfig added

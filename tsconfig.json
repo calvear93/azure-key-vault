@@ -22,7 +22,7 @@
 
         "isolatedModules": true,
         "esModuleInterop": true,
-        "importHelpers": true,
+        "importHelpers": false,
         "skipLibCheck": false,
         "downlevelIteration": false,
 
