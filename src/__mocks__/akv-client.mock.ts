@@ -43,7 +43,7 @@ export class AkvClientMock implements SecretClient {
     async *[Symbol.asyncIterator]() {
         const secrets = Object.values(this.secrets);
 
-        for (const secret of secrets) yield Promise.resolve(secret);
+        for (const secret of secrets) yield secret;
     }
 
     constructor(vaultUrl?: string) {
@@ -211,8 +211,7 @@ export class AkvClientMock implements SecretClient {
             async *[Symbol.asyncIterator]() {
                 const secrets = Object.values(container.secrets);
 
-                for (const { properties } of secrets)
-                    yield Promise.resolve(properties);
+                for (const { properties } of secrets) yield properties;
             }
         } as any;
     }
@@ -233,7 +232,7 @@ export class AkvClientMock implements SecretClient {
 
                 for (const key of keys) {
                     if (key.startsWith(DELETED_PREFIX))
-                        yield Promise.resolve(container.secrets[key]);
+                        yield container.secrets[key];
                 }
             }
         } as any;

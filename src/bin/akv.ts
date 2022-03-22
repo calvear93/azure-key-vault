@@ -9,7 +9,7 @@ const CURRENT_DIR = process.cwd();
 (async () => {
     const args = getArgs();
 
-    const { project, group, env, uri, spn, password, tenant } = args;
+    const { cmd, project, group, env, uri, spn, password, tenant } = args;
 
     // initializes key vault handler
     const keyVault = new AzureKeyVault(
@@ -23,7 +23,7 @@ const CURRENT_DIR = process.cwd();
     );
 
     // command reducer
-    switch (args.cmd) {
+    switch (cmd) {
         case 'getfor':
             {
                 const { file, output, override } = args;

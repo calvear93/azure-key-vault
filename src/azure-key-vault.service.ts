@@ -134,9 +134,9 @@ export class AzureKeyVault {
         const prefix = isShared ? this.prefixShared : this.prefix;
 
         return `${prefix}-${key}`
-            .replace(/[_ ]+/g, '-')
+            .replace(/[ _]+/g, '-')
             .replace(/:/g, '--')
-            .replace(/[$]/g, '')
+            .replace(/\$/g, '')
             .toLowerCase();
     }
 

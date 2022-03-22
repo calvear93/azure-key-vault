@@ -153,11 +153,11 @@ describe('Azure Key Vault Service', () => {
         const secrets = await localService.getAll();
 
         // all setted value must be in store
-        values.forEach(async (secret) => {
+        for (const secret of values) {
             const value = await localService.get(secret.key);
 
             expect(secrets[secret.key]).toBe(value);
-        });
+        }
 
         // all secrets count must be same that setted
         expect(Object.keys(secrets)).toHaveLength(values.length);
