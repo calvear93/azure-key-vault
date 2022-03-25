@@ -14,7 +14,7 @@ describe('Azure Key Vault Service', () => {
         env: 'test'
     };
     // mocked azure key vault client
-    const akvClient = new AkvClientMock();
+    const akvClient = new AkvClientMock() as any;
 
     // SECTION: Events
     beforeAll(() => {

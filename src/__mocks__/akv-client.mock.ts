@@ -31,7 +31,7 @@ const BACKUP_PREFIX = '___backup___';
 
 const DELETED_PREFIX = '___deleted___';
 
-export class AkvClientMock implements SecretClient {
+export class AkvClientMock implements Partial<SecretClient> {
     vaultUrl: string;
 
     secrets: Record<string, KeyVaultSecret>;
