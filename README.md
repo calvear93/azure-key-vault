@@ -244,7 +244,7 @@ Every commands needs credentials arguments for connect to key vault.
 
 You should define your npm script command in **package.json** as:
 
-```json
+```javascript
 // package.json
 {
     ...,
