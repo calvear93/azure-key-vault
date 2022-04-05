@@ -84,22 +84,23 @@ export class AzureKeyVault {
      *
      * @constructor
      *
+     * @param {string} vaultUrl azure key vault url
      * @param {AzureKeyVaultConfig} config key vault config
      * @param {object} [credentials] key vault config
+     * @param {SecretClient} [client] mostly for mocked secrets client
      */
     constructor(
+        vaultUrl: string,
         config: AzureKeyVaultConfig,
         credentials?: AzureKeyVaultCredentials,
         client?: SecretClient
     ) {
         if (credentials) {
-            const { keyVaultUri, clientId, clientSecret, tenantId } =
-                credentials;
+            const { clientId, clientSecret, tenantId } = credentials;
 
-            process.env.AZURE_KEY_VAULT_URI = keyVaultUri;
-            process.env.AZURE_CLIENT_ID = clientId;
-            process.env.AZURE_CLIENT_SECRET = clientSecret;
-            process.env.AZURE_TENANT_ID = tenantId;
+            process.env.AZURE_CLIENT_ID ??= clientId;
+            process.env.AZURE_CLIENT_SECRET ??= clientSecret;
+            process.env.AZURE_TENANT_ID ??= tenantId;
         }
 
         const { project, group, env } = config;
@@ -115,11 +116,7 @@ export class AzureKeyVault {
         this.prefix = `${project}${nsGroup}${nsEnv}`;
         this.prefixShared = `${project}${nsEnv}`;
         this.client =
-            client ??
-            new SecretClient(
-                process.env.AZURE_KEY_VAULT_URI ?? '',
-                new DefaultAzureCredential()
-            );
+            client ?? new SecretClient(vaultUrl, new DefaultAzureCredential());
     }
 
     /**

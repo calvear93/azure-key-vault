@@ -2,8 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
-## [3.0.7] - 2022-03-25
+## [3.1.0] - 2022-04-05
 
+-   @azure/identity updated
 -   dependencies updated
 
 ## [3.0.6] - 2022-03-22

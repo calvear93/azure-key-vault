@@ -10,8 +10,6 @@ export interface AzureKeyVaultConfig {
 }
 
 export interface AzureKeyVaultCredentials {
-    // azure key vault uri
-    keyVaultUri: string;
     // service principal name id
     clientId: string;
     // service principal name secret password

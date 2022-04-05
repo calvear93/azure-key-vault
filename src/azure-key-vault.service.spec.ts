@@ -7,6 +7,8 @@ describe('Azure Key Vault Service', () => {
     let service: AzureKeyVault;
     // common key value pair for test
     const [secretKey, secretValue] = ['key', 'value'];
+
+    const vaultUrl = 'https://fake.vault.azure.net';
     // namespace config
     const config: AzureKeyVaultConfig = {
         project: 'test-project',
@@ -18,7 +20,7 @@ describe('Azure Key Vault Service', () => {
 
     // SECTION: Events
     beforeAll(() => {
-        service = new AzureKeyVault(config, undefined, akvClient);
+        service = new AzureKeyVault(vaultUrl, config, undefined, akvClient);
     });
 
     // SECTION: Tests
@@ -93,6 +95,7 @@ describe('Azure Key Vault Service', () => {
 
     test('global variables ($) must be shared across groups but not global must not', async () => {
         const service1 = new AzureKeyVault(
+            vaultUrl,
             {
                 ...config,
                 group: 'test-group-1'
@@ -102,6 +105,7 @@ describe('Azure Key Vault Service', () => {
         );
 
         const service2 = new AzureKeyVault(
+            vaultUrl,
             {
                 ...config,
                 group: 'test-group-2'
@@ -138,6 +142,7 @@ describe('Azure Key Vault Service', () => {
         ];
 
         const localService = new AzureKeyVault(
+            vaultUrl,
             {
                 ...config,
                 project: 'test-local-project'
