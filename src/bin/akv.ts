@@ -13,9 +13,9 @@ const CURRENT_DIR = process.cwd();
 
     // initializes key vault handler
     const keyVault = new AzureKeyVault(
+        uri,
         { project, group, env },
         {
-            keyVaultUri: uri,
             clientId: spn,
             clientSecret: password,
             tenantId: tenant
