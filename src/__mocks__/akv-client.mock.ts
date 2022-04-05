@@ -23,6 +23,8 @@ import {
     SetSecretOptions,
     UpdateSecretPropertiesOptions
 } from '@azure/keyvault-secrets';
+import { AzureKeyVault } from 'azure-key-vault.service';
+import { AzureKeyVaultConfig } from 'models/config.interface';
 
 // represents azure key vault stores server
 const GLOBAL_STORE: Record<string, Record<string, KeyVaultSecret>> = {};
@@ -31,7 +33,7 @@ const BACKUP_PREFIX = '___backup___';
 
 const DELETED_PREFIX = '___deleted___';
 
-export class AkvClientMock implements Partial<SecretClient> {
+class AkvClientMock implements Partial<SecretClient> {
     vaultUrl: string;
 
     secrets: Record<string, KeyVaultSecret>;
@@ -248,4 +250,12 @@ export class AkvClientMock implements Partial<SecretClient> {
     > {
         throw new Error('Method not implemented.');
     }
+}
+
+const vaultUrl = 'https://fake.vault.azure.net';
+
+const client = new AkvClientMock() as any;
+
+export function createAzureKeyVaultMock(config: AzureKeyVaultConfig) {
+    return new AzureKeyVault(vaultUrl, config, undefined, client);
 }

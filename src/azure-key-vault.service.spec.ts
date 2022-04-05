@@ -1,6 +1,6 @@
 import { AzureKeyVault } from 'azure-key-vault.service';
 import { AzureKeyVaultConfig, SecretValue } from 'index';
-import { AkvClientMock } from '__mocks__/akv-client.mock';
+import { createAzureKeyVaultMock } from '__mocks__/akv-client.mock';
 
 describe('Azure Key Vault Service', () => {
     // SECTION: Init
@@ -8,19 +8,15 @@ describe('Azure Key Vault Service', () => {
     // common key value pair for test
     const [secretKey, secretValue] = ['key', 'value'];
 
-    const vaultUrl = 'https://fake.vault.azure.net';
-    // namespace config
     const config: AzureKeyVaultConfig = {
         project: 'test-project',
         group: 'test-group2',
         env: 'test'
     };
-    // mocked azure key vault client
-    const akvClient = new AkvClientMock() as any;
 
     // SECTION: Events
     beforeAll(() => {
-        service = new AzureKeyVault(vaultUrl, config, undefined, akvClient);
+        service = createAzureKeyVaultMock(config);
     });
 
     // SECTION: Tests
@@ -94,25 +90,15 @@ describe('Azure Key Vault Service', () => {
     });
 
     test('global variables ($) must be shared across groups but not global must not', async () => {
-        const service1 = new AzureKeyVault(
-            vaultUrl,
-            {
-                ...config,
-                group: 'test-group-1'
-            },
-            undefined,
-            akvClient
-        );
+        const service1 = createAzureKeyVaultMock({
+            ...config,
+            group: 'test-group-1'
+        });
 
-        const service2 = new AzureKeyVault(
-            vaultUrl,
-            {
-                ...config,
-                group: 'test-group-2'
-            },
-            undefined,
-            akvClient
-        );
+        const service2 = createAzureKeyVaultMock({
+            ...config,
+            group: 'test-group-2'
+        });
 
         const [nonGlobalKey, nonGlobalValue] = ['key', 'value'];
         const [globalKey, globalValue] = ['$global-key', 'globalValue'];
@@ -141,15 +127,10 @@ describe('Azure Key Vault Service', () => {
             { key: 'k3', value: true }
         ];
 
-        const localService = new AzureKeyVault(
-            vaultUrl,
-            {
-                ...config,
-                project: 'test-local-project'
-            },
-            undefined,
-            akvClient
-        );
+        const localService = createAzureKeyVaultMock({
+            ...config,
+            project: 'test-local-project'
+        });
 
         await Promise.all(
             values.map((secret) => localService.set(secret.key, secret.value))

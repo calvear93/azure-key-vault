@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.1.1] - 2022-04-05
+
+-   createAzureKeyVaultMock added
+
 ## [3.1.0] - 2022-04-05
 
 -   @azure/identity updated
