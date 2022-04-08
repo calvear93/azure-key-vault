@@ -12,13 +12,13 @@ import { AzureKeyVault } from '@calvear/azure-key-vault';
 
 // initializes azure key vault
 const keyVault = new AzureKeyVault(
+    'https://my-key-vault.vault.azure.net',
     {
         project: 'my-project',
         group: 'web',
         env: 'dev',
     },
     {
-        keyVaultUri: 'https://my-key-vault.vault.azure.net',
         clientId: 'f176a774-239e-4cd3-8551-88fd9fb9b441',
         clientSecret: 'WyBwkmcL8rGQe9B2fvRLDrqDuannE4Ku',
         tenantId: '9dba8525-be64-4d10-b124-e6f1644ae513',
