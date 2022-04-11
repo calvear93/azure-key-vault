@@ -105,9 +105,9 @@ export class AzureKeyVault {
 
         const { project, group, env } = config;
 
-        this.project = project;
-        this.group = group;
-        this.env = env;
+        this.project = project ?? '';
+        this.group = group ?? '';
+        this.env = env ?? '';
 
         const nsEnv = env ? `-${env}` : '';
         const nsGroup = group ? `-${group}` : '';
