@@ -32,54 +32,6 @@ import {
  */
 export class AzureKeyVault {
     /**
-     * Azure Key Vault client.
-     *
-     * @private
-     * @type {SecretClient}
-     */
-    public client: SecretClient;
-
-    /**
-     * Secret prefix.
-     *
-     * @private
-     * @type {string}
-     */
-    private prefix: string;
-
-    /**
-     * Shared secret prefix.
-     *
-     * @private
-     * @type {string}
-     */
-    private prefixShared: string;
-
-    /**
-     * Project name.
-     *
-     * @private
-     * @type {string}
-     */
-    private project: string;
-
-    /**
-     * Secrets group.
-     *
-     * @private
-     * @type {string}
-     */
-    private group?: string;
-
-    /**
-     * Secrets environment.
-     *
-     * @private
-     * @type {string}
-     */
-    private env?: string;
-
-    /**
      * Validates emptiness of an object.
      *
      * @constructor
@@ -98,9 +50,9 @@ export class AzureKeyVault {
         if (credentials) {
             const { clientId, clientSecret, tenantId } = credentials;
 
-            process.env.AZURE_CLIENT_ID ??= clientId;
-            process.env.AZURE_CLIENT_SECRET ??= clientSecret;
-            process.env.AZURE_TENANT_ID ??= tenantId;
+            if (clientId) process.env.AZURE_CLIENT_ID = clientId;
+            if (clientSecret) process.env.AZURE_CLIENT_SECRET = clientSecret;
+            if (tenantId) process.env.AZURE_TENANT_ID = tenantId;
         }
 
         const { project, group, env } = config;
@@ -483,4 +435,52 @@ export class AzureKeyVault {
                 await this.restore(key);
         }
     }
+
+    /**
+     * Azure Key Vault client.
+     *
+     * @private
+     * @type {SecretClient}
+     */
+    public client: SecretClient;
+
+    /**
+     * Secret prefix.
+     *
+     * @private
+     * @type {string}
+     */
+    private prefix: string;
+
+    /**
+     * Shared secret prefix.
+     *
+     * @private
+     * @type {string}
+     */
+    private prefixShared: string;
+
+    /**
+     * Project name.
+     *
+     * @private
+     * @type {string}
+     */
+    private project: string;
+
+    /**
+     * Secrets group.
+     *
+     * @private
+     * @type {string}
+     */
+    private group?: string;
+
+    /**
+     * Secrets environment.
+     *
+     * @private
+     * @type {string}
+     */
+    private env?: string;
 }

@@ -40,3 +40,5 @@ debug.log
 .vscode - test
 
 test.js
+input.json
+output.json

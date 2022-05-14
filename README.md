@@ -5,12 +5,30 @@ Also, this library handles nested JSON structures.
 
 ## How To Use 💡
 
-Should be initialized with AzureKeyVault as:
+Should be initialized with AzureKeyVault in two ways as:
 
 ```javascript
 import { AzureKeyVault } from '@calvear/azure-key-vault';
 
-// initializes azure key vault
+// initializes azure key vault with default credentials
+// azure cli, environment variables, etc.
+// see https://www.npmjs.com/package/@azure/identity
+
+// execute `az login` if you're using az cli
+const keyVault = new AzureKeyVault(
+    'https://my-key-vault.vault.azure.net',
+    {
+        project: 'my-project',
+        group: 'web',
+        env: 'dev',
+    }
+);
+```
+
+```javascript
+import { AzureKeyVault } from '@calvear/azure-key-vault';
+
+// initializes azure key vault with SPN credentials
 const keyVault = new AzureKeyVault(
     'https://my-key-vault.vault.azure.net',
     {
@@ -24,6 +42,14 @@ const keyVault = new AzureKeyVault(
         tenantId: '9dba8525-be64-4d10-b124-e6f1644ae513',
     }
 );
+```
+
+and used as below:
+
+```javascript
+import { AzureKeyVault } from '@calvear/azure-key-vault';
+
+// initialized here ...
 
 async function main() {
     await keyVault.setAll({
@@ -78,6 +104,16 @@ const keyVault = new AzureKeyVault({
 
 ...
 ```
+
+### **Logging**
+
+You can change log level using `AZURE_LOG_LEVEL` environment variable:
+
+```javascript
+process.env.AZURE_LOG_LEVEL = 'info';
+```
+
+        > levels: 'verbose', 'info', 'warning', 'error'
 
 ### **Functions**
 
@@ -167,11 +203,11 @@ let secrets = {
     'my-secret': null,
     'my-secret-2': 'default value',
     'my-secret-group1': {
-        'my-secret-3': null
+        'my-secret-3': null,
     },
     // in case of array type variable, default must be
     // an array (or empty array) for correct deserialize
-    'my-array-secret': []
+    'my-array-secret': [],
 };
 
 const listOfSecrets = await keyVault.getFor(secrets);
@@ -189,9 +225,9 @@ let secrets = {
     'my-secret': 'my secret',
     'my-secret-2': 'my secret 2',
     'my-secret-group1': {
-        'my-secret-3': 'my secret 3'
+        'my-secret-3': 'my secret 3',
     },
-    'my-array-secret': ['a', 'b', 'c']
+    'my-array-secret': ['a', 'b', 'c'],
 };
 
 const listOfProperties = await keyVault.setAll(secrets);
