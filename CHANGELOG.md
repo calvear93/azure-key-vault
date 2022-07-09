@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.3.0] - 2022-07-09
+
+-   updated dependencies
+
 ## [3.2.0] - 2022-05-14
 
 -   default credentials (azure cli) auth from @azure/identity
