@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.5.0] - 2022-09-15
+
+-   updated dependencies
+-   node 14 support dropped
+
 ## [3.3.0] - 2022-07-09
 
 -   updated dependencies
