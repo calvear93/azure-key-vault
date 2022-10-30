@@ -15,7 +15,7 @@
 		"typescript"
 	],
 	"scripts": {
-		"build": "pnpm prebuild &&tsc --p tsconfig.build.json && tsc-alias -p tsconfig.build.json && pnpm postbuild",
+		"build": "pnpm prebuild && tsc --p tsconfig.build.json && tsc-alias -p tsconfig.build.json && pnpm postbuild",
 		"test": "jest --watchAll=false --verbose",
 		"pub": "pnpm build && pnpm login && pnpm publish dist --access public",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx src/",
