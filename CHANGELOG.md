@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.0.0] - 2022-10-30
+
+-   PNPM
+-   tabs instead spaces
+-   @azure/identity v3
+
 ## [3.5.0] - 2022-09-15
 
 -   updated dependencies

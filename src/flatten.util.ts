@@ -1,7 +1,7 @@
 import {
-    AzureKeyVaultSecrets,
-    SecretKey,
-    SecretValue
+	AzureKeyVaultSecrets,
+	SecretKey,
+	SecretValue
 } from './models/secrets.interface';
 
 /**
@@ -14,27 +14,27 @@ import {
  * @returns {AzureKeyVaultSecrets} flatten secrets
  */
 export function flatten(
-    secrets: AzureKeyVaultSecrets,
-    namespace: SecretKey = ''
+	secrets: AzureKeyVaultSecrets,
+	namespace: SecretKey = ''
 ): AzureKeyVaultSecrets {
-    const flattened: AzureKeyVaultSecrets = {};
+	const flattened: AzureKeyVaultSecrets = {};
 
-    // iterate over first level
-    for (const key in secrets) {
-        const value = secrets[key];
+	// iterate over first level
+	for (const key in secrets) {
+		const value = secrets[key];
 
-        if (typeof value !== 'object' || value === null) {
-            flattened[`${namespace}${key}`] = value;
+		if (typeof value !== 'object' || value === null) {
+			flattened[`${namespace}${key}`] = value;
 
-            continue;
-        }
+			continue;
+		}
 
-        if (Array.isArray(value)) flattened[`${namespace}${key}`] = value;
-        // next level recursively
-        else Object.assign(flattened, flatten(value, `${namespace}${key}--`));
-    }
+		if (Array.isArray(value)) flattened[`${namespace}${key}`] = value;
+		// next level recursively
+		else Object.assign(flattened, flatten(value, `${namespace}${key}--`));
+	}
 
-    return flattened;
+	return flattened;
 }
 
 /**
@@ -46,15 +46,15 @@ export function flatten(
  * @returns {AzureKeyVaultSecrets} deflatten secrets
  */
 export function deflatten(secrets: AzureKeyVaultSecrets): AzureKeyVaultSecrets {
-    // mutable, will contain deflatten secrets
-    const restored: AzureKeyVaultSecrets = {};
+	// mutable, will contain deflatten secrets
+	const restored: AzureKeyVaultSecrets = {};
 
-    // for each property, calc hierarchy tree
-    // i.e. "level1--level2--level3": value --> "level1": {"level2": {"level3": value}}
-    for (const key in secrets)
-        rearmTree(restored, key.split('--'), secrets[key]);
+	// for each property, calc hierarchy tree
+	// i.e. "level1--level2--level3": value --> "level1": {"level2": {"level3": value}}
+	for (const key in secrets)
+		rearmTree(restored, key.split('--'), secrets[key]);
 
-    return restored;
+	return restored;
 }
 
 /**
@@ -66,18 +66,18 @@ export function deflatten(secrets: AzureKeyVaultSecrets): AzureKeyVaultSecrets {
  * @param {SecretValue} value node value
  */
 function rearmTree(
-    restored: AzureKeyVaultSecrets,
-    members: string[],
-    value: SecretValue
+	restored: AzureKeyVaultSecrets,
+	members: string[],
+	value: SecretValue
 ): void {
-    const [namespace, ...rest] = members;
+	const [namespace, ...rest] = members;
 
-    if (members.length === 1) {
-        restored[namespace] = value;
-    } else {
-        // initializes nested object
-        if (!restored[namespace]) restored[namespace] = {};
+	if (members.length === 1) {
+		restored[namespace] = value;
+	} else {
+		// initializes nested object
+		if (!restored[namespace]) restored[namespace] = {};
 
-        rearmTree(restored[namespace] as AzureKeyVaultSecrets, rest, value);
-    }
+		rearmTree(restored[namespace] as AzureKeyVaultSecrets, rest, value);
+	}
 }

@@ -23,13 +23,13 @@ import parseParams, { ParsedArgs } from 'minimist';
  * @returns {ParsedArgs} command line parameters
  */
 export function getArgs(): ParsedArgs {
-    // get command arguments
-    const args = parseParams(process.argv.slice(2));
-    // extracts cmd and options from args
-    const [cmd, ...options] = args._;
+	// get command arguments
+	const args = parseParams(process.argv.slice(2));
+	// extracts cmd and options from args
+	const [cmd, ...options] = args._;
 
-    args.cmd = cmd?.toLowerCase();
-    args.options = options;
+	args.cmd = cmd?.toLowerCase();
+	args.options = options;
 
-    return args;
+	return args;
 }

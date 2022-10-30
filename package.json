@@ -1,61 +1,61 @@
 {
-    "version": "3.4.0",
-    "project": "common",
-    "name": "@calvear/azure-key-vault",
-    "title": "Azure Key Vault handler library",
-    "description": "Wrapper for @azure/keyvault-secrets for ease secrets handler in JSON files.",
-    "author": "Alvear Candia, Cristopher Alejandro <calvear93@gmail.com>",
-    "repository": "https://github.com/calvear93/azure-key-vault",
-    "license": "MIT",
-    "private": false,
-    "keywords": [
-        "azure",
-        "key-vault",
-        "secrets",
-        "typescript"
-    ],
-    "scripts": {
-        "build": "tsc --p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
-        "test": "jest --watchAll=false --verbose",
-        "pub": "npm run build && npm login && cd dist && npm publish --access public",
-        "lint": "eslint --ext .js,.jsx,.ts,.tsx src/",
-        "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx src/",
-        "prebuild": "rimraf dist/**",
-        "postbuild": "copyfiles package.json README.md LICENSE.md CHANGELOG.md dist"
-    },
-    "dependencies": {
-        "@azure/identity": "^2.1.0",
-        "@azure/keyvault-secrets": "^4.5.1",
-        "minimist": "^1.2.6"
-    },
-    "devDependencies": {
-        "@types/jest": "^29.0.3",
-        "@types/minimist": "^1.2.2",
-        "@types/node": "^18.7.18",
-        "@typescript-eslint/eslint-plugin": "^5.37.0",
-        "@typescript-eslint/parser": "^5.37.0",
-        "copyfiles": "^2.4.1",
-        "eslint": "^8.23.1",
-        "eslint-config-prettier": "^8.5.0",
-        "eslint-plugin-eslint-comments": "^3.2.0",
-        "eslint-plugin-jest": "^27.0.4",
-        "eslint-plugin-jest-formatting": "^3.1.0",
-        "eslint-plugin-prettier": "^4.2.1",
-        "eslint-plugin-promise": "^6.0.1",
-        "eslint-plugin-sonarjs": "^0.15.0",
-        "eslint-plugin-unicorn": "^43.0.2",
-        "jest": "^29.0.3",
-        "ts-jest": "^29.0.1",
-        "tsc-alias": "^1.7.0",
-        "typescript": "^4.8.3"
-    },
-    "main": "index.js",
-    "types": "index.d.ts",
-    "bin": {
-        "akv": "bin/akv.js"
-    },
-    "engines": {
-        "node": "~16.0.0 || >=18.0.0",
-        "npm": ">=8.0.0"
-    }
+	"version": "4.0.0",
+	"project": "common",
+	"name": "@calvear/azure-key-vault",
+	"title": "Azure Key Vault handler library",
+	"description": "Wrapper for @azure/keyvault-secrets for ease secrets handler in JSON files.",
+	"author": "Alvear Candia, Cristopher Alejandro <calvear93@gmail.com>",
+	"repository": "https://github.com/calvear93/azure-key-vault",
+	"license": "MIT",
+	"private": false,
+	"keywords": [
+		"azure",
+		"key-vault",
+		"secrets",
+		"typescript"
+	],
+	"scripts": {
+		"build": "pnpm prebuild &&tsc --p tsconfig.build.json && tsc-alias -p tsconfig.build.json && pnpm postbuild",
+		"test": "jest --watchAll=false --verbose",
+		"pub": "pnpm build && pnpm login && pnpm publish dist --access public",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx src/",
+		"lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx src/",
+		"prebuild": "rimraf dist/**",
+		"postbuild": "copyfiles package.json README.md LICENSE.md CHANGELOG.md dist"
+	},
+	"dependencies": {
+		"@azure/identity": "^3.0.0",
+		"@azure/keyvault-secrets": "^4.6.0",
+		"minimist": "^1.2.7"
+	},
+	"devDependencies": {
+		"@types/jest": "^29.2.0",
+		"@types/minimist": "^1.2.2",
+		"@types/node": "^18.11.8",
+		"@typescript-eslint/eslint-plugin": "^5.41.0",
+		"@typescript-eslint/parser": "^5.41.0",
+		"copyfiles": "^2.4.1",
+		"eslint": "^8.26.0",
+		"eslint-config-prettier": "^8.5.0",
+		"eslint-plugin-eslint-comments": "^3.2.0",
+		"eslint-plugin-jest": "^27.1.3",
+		"eslint-plugin-jest-formatting": "^3.1.0",
+		"eslint-plugin-prettier": "^4.2.1",
+		"eslint-plugin-promise": "^6.1.1",
+		"eslint-plugin-sonarjs": "^0.16.0",
+		"eslint-plugin-unicorn": "^44.0.2",
+		"jest": "^29.2.2",
+		"prettier": "^2.7.1",
+		"ts-jest": "^29.0.3",
+		"tsc-alias": "^1.7.0",
+		"typescript": "^4.8.4"
+	},
+	"main": "index.js",
+	"types": "index.d.ts",
+	"bin": {
+		"akv": "bin/akv.js"
+	},
+	"engines": {
+		"node": "~16.0.0 || >=18"
+	}
 }
