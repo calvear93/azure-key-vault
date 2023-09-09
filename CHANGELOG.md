@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.1.0] - 2023-09-09
+
+-   Updates dependencies
+
 ## [4.0.0] - 2022-10-30
 
 -   PNPM
